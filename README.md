@@ -24,7 +24,7 @@ Clone the QSAR git repository and enter the project folder:
 
 - And then access the virtualenv you just created: `$ workon qsar`
 
-- Go to `src/` folder: `$ cd src/` and install the project requirements:
+- Go to `src/` folder and install the project requirements:
 
 	`$ pip install -r requirements.txt`
 
@@ -32,4 +32,4 @@ Clone the QSAR git repository and enter the project folder:
 
 `python run.py`
 
-Now, go to your favorite browser and type `http://127.0.0.1:5000` and say hello!
+Now, go to your favorite browser, type `http://127.0.0.1:5000` and say hello!
