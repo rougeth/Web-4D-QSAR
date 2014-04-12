@@ -14,7 +14,7 @@
 
 Clone the QSAR git repository and enter the project folder:
 	
-`$ git clone https://bitbucket.org/mdequeiroz/qsar & cd qsar`
+`$ git clone https://bitbucket.org/mdequeiroz/qsar && cd qsar`
 
 ### Preparing the environment
 
@@ -26,7 +26,7 @@ Clone the QSAR git repository and enter the project folder:
 
 - Go to `src/` folder: `$ cd src/` and install the project requirements:
 
-	`$ pip install -r requiriments.txt`
+	`$ pip install -r requirements.txt`
 
 ### Running
 
