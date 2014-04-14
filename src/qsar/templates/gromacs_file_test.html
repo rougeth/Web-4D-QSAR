@@ -1,16 +1,23 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
+{% if success %}
+<div class="alert alert-success alert-dismissable">
+  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+  File uploaded with success!
+</div>
+{% endif %}
+
 <div class="page-header">
   <h1>Gromacs file upload test</h1>
 </div>
 <p class="lead">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Non, praesentium excepturi magni expedita nam corporis labore velit illo voluptatem voluptatibus nostrum commodi assumenda. Quos, porro necessitatibus iusto ducimus quisquam quidem.</p>
 
-<form role="form" method="post" action="/gromacs-file-test/upload">
-{{ form.hidden_tag() }}
+<form role="form" method="post" action="" enctype="multipart/form-data">
   <div class="form-group">
     <label for="gromacs_file">Gromacs file input</label>
-      {{ form.gromacs_file }}
+    <input type="file" id="gromacs_file" name="gromacs_file">
     <p class="help-block">Some help text here.</p>
   </div>
   <button type="submit" class="btn btn-default">Submit</button>

@@ -1,25 +1,25 @@
-from flask import render_template
+import os
+from flask import request, render_template
 from qsar import app
-from qsar.forms import GromacsFileUpload
+from werkzeug.utils import secure_filename
+
 
 @app.route('/')
 def index():
     return render_template('home.html')
 
-@app.route('/gromacs-file-test')
-def gromacs():
-    gromacs_form = GromacsFileUpload();
 
-    return render_template('gromacs_file_test.html',
-        form = gromacs_form)
+@app.route('/tests/gromacs-file-test', methods=['GET', 'POST'])
+def gromacs_file_test():
 
-@app.route('/gromacs-file-test/upload', methods=['POST'])
-def gromacs_upload():
-    gromacs_form = GromacsFileUpload();
+    if request.method == 'POST':
 
-    if gromacs_form.validate_on_submit():
-        return render_template('gromacs_file_test_upload.html',
-            success=True)
+        file = request.files['gromacs_file']
+        if file:
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-    return render_template('gromacs_file_test_upload.html',
-        success=False)
+            return render_template('gromacs_file_test.html',
+                success=True)
+
+    return render_template('gromacs_file_test.html')

@@ -1,3 +1,5 @@
 # Flask-WTF
 CSRF_ENABLED = True
 SECRET_KEY = 'ANY-SECRET-KEY'
+
+UPLOAD_FOLDER = '/tmp/gromacs'
