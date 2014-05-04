@@ -10,8 +10,7 @@ class TestUtils(unittest.TestCase):
         pass
 
     def tearDown(self):
-        pass
-        # os.system('rm /tmp/qsar_test.txt')
+        os.system('rm /tmp/qsar_test.txt')
 
     def test_remove_line(self):
         line = '#include "ffusernb.itp"'
@@ -29,7 +28,7 @@ class TestUtils(unittest.TestCase):
 
         self.assertFalse(line in lines)
 
-    def replace_line(self):
+    def test_replace_line(self):
         line1 = '#include "gaff_spce.itp"'
         line2 = '#include "gaff_tip3p.itp"'
         file = '/tmp/qsar_test.txt'
