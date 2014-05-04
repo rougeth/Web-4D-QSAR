@@ -1,7 +1,7 @@
 # coding: utf-8
-from utils import
+from utils import remove_line
 
-# script: preparing files for gromacs
+# script: preparing files to molecular dynamics
 #
 # Following QuimComp (Química computacional aplicada a QSAR) instructions:
 #     - 7.2 Dinâmica molecular usando o GROMACS
