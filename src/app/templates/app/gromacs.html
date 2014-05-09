@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Gromacs File Uploader</h1>
+</div>
+<p class="lead">
+    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Officiis, delectus voluptatem accusamus porro quo odio quae numquam molestias illo quos enim vel officia illum ducimus impedit rerum voluptatibus ea nobis.
+</p>
+
+<form role="form" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="gromacs_file">E-mail</label>
+        <p class="help-block">Please, use a valid e-mail.</p>
+        {{ form.email }}
+    </div>
+    <div class="form-group">
+        <label for="gromacs_file">Gromacs file input</label>
+        <p class="help-block">Some help text here.</p>
+        {{ form.zip_file }}
+    </div>
+    <button type="submit" class="btn btn-default">Submit</button>
+</form>
+{% endblock %}
