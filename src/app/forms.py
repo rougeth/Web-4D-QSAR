@@ -1,8 +1,15 @@
 from django import forms
 
+from app.models import Dynamic
 
-class GromacsForm(forms.Form):
-    email = forms.EmailField(
-        widget=forms.EmailInput(attrs={'class': 'form-control'})
-    )
-    zip_file = forms.FileField()
+
+class DynamicForm(forms.Form):
+    email = forms.EmailField()
+
+    box_size_x = forms.IntegerField()
+    box_size_y = forms.IntegerField()
+    box_size_z = forms.IntegerField()
+
+
+class DynamicFileForm(forms.Form):
+    file = forms.FileField()
