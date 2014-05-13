@@ -11,8 +11,8 @@
 <form role="form" method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {{ dynamic_form.as_p }}
-    {{ dynamic_file_formset.management_form }}
-    {% for f in dynamic_file_formset %}
+    {{ molecule_form.management_form }}
+    {% for f in molecule_form %}
         {{ f.as_p }}
     {% endfor %}
     <a class="btn btn-default" id="add-input-file">Add file</a>
@@ -31,6 +31,7 @@
                 .clone()
                 .attr('id', 'id_form-' + (inputs + 1) + '-file')
                 .attr('name', 'form-' + (inputs + 1) + '-file')
+                .val('')
                 .insertAfter('#id_form-' + inputs + '-file');
             inputs = inputs + 1;
             $('#id_form-TOTAL_FORMS').val(inputs + 1);
