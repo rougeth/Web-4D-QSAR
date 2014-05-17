@@ -11,6 +11,39 @@
 
 To install these softwares follow their documentation.
 
+## Preparing the machine
+
+> **This should be automated using Puppet**
+
+
+
+### Installing Gromacs 4.6.5
+
+```
+$ cd /tmp
+$ curl -s ftp://ftp.gromacs.org/pub/gromacs/gromacs-4.6.5.tar.gz -o /tmp
+$ tar xfz gromacs-4.6.5.tar.gz
+$ mkdir gromacs-4.6.5/build
+$ cd gromacs-4.6.5/build
+$ cmake .. -DGMX_BUILD_OWN_FFTW=ON
+$ make
+$ sudo make install
+$ echo export PATH=/usr/local/gromacs/bin:$PATH >> ~/.bashrc
+```
+
+### Installing topolbuild
+
+```
+$ cd /tmp
+$ curl -s http://www.gromacs.org/@api/deki/files/40/=topolbuild1_2_1.tgz -o topolbuild1_2_1.tgz
+$ tar xvfz topolbuild1_2_1.tgz
+$ cd topolbuild1_2_1/src
+$ make
+$ sudo cp -r /tmp/topolbuild1_2_1 /opt
+$ sudo chmod a+x /opt/topolbuild1_2_1/src/topolbuild
+$ sudo ln -s /opt/topolbuild1_2_1/src/topolbuild /usr/local/bin/topolbuild
+```
+
 
 ## Installing and running <our-project-name>
 
