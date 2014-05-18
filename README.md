@@ -64,7 +64,7 @@ Clone the <our-project-name> git repository and enter the project folder:
 - Go to `src/` folder and install the project requirements:
 
 	`$ pip install -r requirements.txt`
-	
+
 ---
 For the next steps, you must be at `src/` folder.
 
@@ -85,7 +85,7 @@ Open a new terminal, access the virtualenv that was created with `$ workon qsar`
 
 #### Running worker
 
-`$ celery qsar worker -l info`
+`$ celery -A qsar worker -l info`
 
 
 Now, go to your favorite browser, type `http://127.0.0.1:8000/celery-test` and see the celery working.
