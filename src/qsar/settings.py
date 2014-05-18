@@ -92,6 +92,9 @@ TEMPLATE_DIRS = (
 
 STATIC_URL = '/static/'
 
+# QSAR
+QSAR_STATIC_FILES = os.path.join(BASE_DIR, 'files/static')
+
 # Celery settings
 BROKER_URL = 'amqp://guest:guest@localhost:5672//'
 # CELERYD_CONCURRENCY = 4

@@ -4,7 +4,7 @@ from django.shortcuts import render
 
 from app.forms import DynamicForm, MoleculeForm
 from app.models import Dynamic, Molecule
-from app.tasks import celery_task
+from app import tasks
 
 
 def home(request):
@@ -27,13 +27,15 @@ def gromacs(request):
 
             for i, f in enumerate(molecule_form):
                 file = f.cleaned_data['file']
-                file.name = '{}_{}'.format(i,file.name)
+                file.name = '{}_molecule.mol2'.format(i)
                 new_molecule = Molecule(
                     dynamic=new_dynamic,
                     file=f.cleaned_data['file']
                 )
                 new_molecule.save()
-                
+
+            tasks.main.delay(new_dynamic)
+
             return HttpResponse('ok')
     else:
         context = {
@@ -41,8 +43,3 @@ def gromacs(request):
             'molecule_form': molecule_formset
         }
         return render(request, 'app/new_dynamic.html', context)
-
-
-def celery_test(request):
-    celery_task.delay()
-    return HttpResponse('Testing Celery')

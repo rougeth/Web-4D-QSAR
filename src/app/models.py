@@ -10,6 +10,7 @@ def path_builder(instance, filename):
         filename
     )
 
+
 class Dynamic(models.Model):
     email = models.EmailField()
     # Gromacs params
@@ -17,6 +18,7 @@ class Dynamic(models.Model):
     # Flags
     process_finished = models.BooleanField(default=False)
     email_sent = models.BooleanField(default=False)
+
 
 class Molecule(models.Model):
     dynamic = models.ForeignKey(Dynamic)
