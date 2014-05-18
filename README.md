@@ -13,15 +13,13 @@ To install these softwares follow their documentation.
 
 ## Preparing the machine
 
-> **This should be automated using Puppet**
+> **\* It should be automated using Puppet**
 
-
-
-### Installing Gromacs 4.6.5
+### * Installing Gromacs 4.6.5
 
 ```
 $ cd /tmp
-$ curl -s ftp://ftp.gromacs.org/pub/gromacs/gromacs-4.6.5.tar.gz -o /tmp
+$ curl -s ftp://ftp.gromacs.org/pub/gromacs/gromacs-4.6.5.tar.gz -o /tmp/gromacs-4.6.5.tar.gz
 $ tar xfz gromacs-4.6.5.tar.gz
 $ mkdir gromacs-4.6.5/build
 $ cd gromacs-4.6.5/build
@@ -31,7 +29,7 @@ $ sudo make install
 $ echo export PATH=/usr/local/gromacs/bin:$PATH >> ~/.bashrc
 ```
 
-### Installing topolbuild
+### * Installing topolbuild
 
 ```
 $ cd /tmp
@@ -43,7 +41,6 @@ $ sudo cp -r /tmp/topolbuild1_2_1 /opt
 $ sudo chmod a+x /opt/topolbuild1_2_1/src/topolbuild
 $ sudo ln -s /opt/topolbuild1_2_1/src/topolbuild /usr/local/bin/topolbuild
 ```
-
 
 ## Installing and running <our-project-name>
 
@@ -66,6 +63,7 @@ Clone the <our-project-name> git repository and enter the project folder:
 	`$ pip install -r requirements.txt`
 
 ---
+
 For the next steps, you must be at `src/` folder.
 
 ### Preparing the database
@@ -77,6 +75,7 @@ For the next steps, you must be at `src/` folder.
 `$ python manage.py runserver`
 
 ### Preparing Celery
+
 Open a new terminal, access the virtualenv that was created with `$ workon qsar` and go to `src/` folder.
 
 #### Running RabbitMQ
@@ -86,6 +85,5 @@ Open a new terminal, access the virtualenv that was created with `$ workon qsar`
 #### Running worker
 
 `$ celery -A qsar worker -l info`
-
 
 Now, go to your favorite browser, type `http://127.0.0.1:8000/celery-test` and see the celery working.
