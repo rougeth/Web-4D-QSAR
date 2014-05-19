@@ -27,7 +27,7 @@ def gromacs(request):
 
             for i, f in enumerate(molecule_form):
                 file = f.cleaned_data['file']
-                file.name = '{}_molecule.mol2'.format(i)
+                file.name = '{}_{}'.format(i, file.name)
                 new_molecule = Molecule(
                     dynamic=new_dynamic,
                     file=f.cleaned_data['file']
