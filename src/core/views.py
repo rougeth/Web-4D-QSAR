@@ -2,13 +2,13 @@ from django.forms.formsets import formset_factory
 from django.http import HttpResponse
 from django.shortcuts import render
 
-from app.forms import DynamicForm, MoleculeForm
-from app.models import Dynamic, Molecule
-from app import tasks
+from core.forms import DynamicForm, MoleculeForm
+from core.models import Dynamic, Molecule
+from core import tasks
 
 
 def home(request):
-    return render(request, 'app/home.html')
+    return render(request, 'core/home.html')
 
 
 def gromacs(request):
@@ -27,7 +27,6 @@ def gromacs(request):
 
             for i, f in enumerate(molecule_form):
                 file = f.cleaned_data['file']
-                file.name = '{}_{}'.format(i, file.name)
                 new_molecule = Molecule(
                     dynamic=new_dynamic,
                     file=f.cleaned_data['file']
@@ -42,4 +41,4 @@ def gromacs(request):
             'dynamic_form': DynamicForm(),
             'molecule_form': molecule_formset
         }
-        return render(request, 'app/new_dynamic.html', context)
+        return render(request, 'core/new_dynamic.html', context)

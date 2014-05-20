@@ -38,7 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     # Main app
-    'app',  # this is not a good name for django apps
+    'core',
 )
 
 MIDDLEWARE_CLASSES = (

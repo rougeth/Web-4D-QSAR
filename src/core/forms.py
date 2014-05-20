@@ -1,6 +1,6 @@
 from django import forms
 
-from app.models import Dynamic
+from core.models import Dynamic
 
 
 class DynamicForm(forms.Form):

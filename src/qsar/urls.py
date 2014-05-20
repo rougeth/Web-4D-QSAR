@@ -5,9 +5,8 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     # Examples:
-    url(r'^home$', 'app.views.home', name='home'),
-    url(r'^gromacs$', 'app.views.gromacs', name='home'),
-    url(r'^celery-test$', 'app.views.celery_test', name='home'),
+    url(r'^home$', 'core.views.home', name='home'),
+    url(r'^gromacs$', 'core.views.gromacs', name='home'),
 
     # url(r'^blog/', include('blog.urls')),
 
