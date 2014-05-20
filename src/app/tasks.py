@@ -1,4 +1,5 @@
 import os
+import subprocess
 from time import sleep
 
 from django.conf import settings
@@ -24,22 +25,43 @@ def main(dynamic):
     # Pepraring files
     for molecule in molecules:
 
+        # ../../../<id>_molecule.mol2 to <id>_molecule.mol2
+        molecule_filename = molecule.file.path.split('/')[-1]
+        process_path = '{}/{}_process'.format(
+            # ../files/dynamics/<email>/<id>/
+            os.path.dirname(molecule.file.path),
+            # <id> from <id>_molecule.mol2
+            molecule_filename.split('_')[0]
+        )
+        os.mkdir(process_path)
+
+        os.system('cp {} {}/{}'.format(
+            # ../files/dynamics/<email>/<id>/<id>_molecule.mol2
+            molecule.file.path,
+            process_path,
+            molecule_filename
+        ))
+
+        os.system('cp {}/* {}/'.format(
+            QSAR_STATIC_FILES,
+            process_path
+        ))
+
+    # Topolbuild
+    for molecule in molecules:
+
         molecule_filename = molecule.file.path.split('/')[-1]
 
-        molecule_process_path = '{}/{}_molecule_process'.format(
+        topolbuild_path = '/opt/topolbuild1_2_1'
+        process_path = '{}/{}_process'.format(
             os.path.dirname(molecule.file.path),
             molecule_filename.split('_')[0]
         )
 
-        os.mkdir(molecule_process_path)
-        os.system('cp {} {}/{}'.format(
-            molecule.file.path,
-            molecule_process_path,
-            molecule_filename
-        ))
-        os.system('cp {}/* {}/'.format(
-            QSAR_STATIC_FILES,
-            molecule_process_path
-        ))
+        subprocess.Popen([
+            '/usr/local/bin/topolbuild',
+            '-n', '{}'.format(molecule.file.path[:-5]),
+            '-dir', '{}'.format(topolbuild_path),
+            '-ff', 'gaff'], cwd=process_path)
 
     return molecules
