@@ -49,7 +49,7 @@ def main(dynamic):
 
     # Topolbuild
     for molecule in molecules:
-
+        
         molecule_filename = molecule.file.path.split('/')[-1]
 
         topolbuild_path = '/opt/topolbuild1_2_1'
