@@ -81,8 +81,10 @@ def main(dynamic):
         os.system('cat {0}/ion_water.itp >> {0}/ff{1}nb.itp'.format(
             process_path, molecule_clean_filename))
 
-        os.system('mv {0}/{1}.top {0}/lig.top'.format(process_path, molecule_clean_filename))
-        os.system('mv {0}/{1}.gro {0}/lig.gro'.format(process_path, molecule_clean_filename))
+        os.system('mv {0}/{1}.top {0}/lig.top'.format(
+            process_path, molecule_clean_filename))
+        os.system('mv {0}/{1}.gro {0}/lig.gro'.format(
+            process_path, molecule_clean_filename))
 
         subprocess.Popen([
             '/usr/local/gromacs/bin/editconf',
