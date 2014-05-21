@@ -91,7 +91,18 @@ def main(dynamic):
             '-bt', 'cubic',
             '-f', 'lig.gro',
             '-o', 'lig_box.gro',
-            '-d', str(molecule.dynamic.box_size)], cwd=process_path)
+            '-d', str(molecule.dynamic.box_size)],
+            stdout=subprocess.DEVNULL,
+            cwd=process_path).wait()
+
+        subprocess.Popen([
+            '/usr/local/gromacs/bin/genbox',
+            '-cp', 'lig_box.gro',
+            '-cs', 'tip3p.gro',
+            '-o', 'lig_h2o.gro',
+            '-p', 'lig.top'],
+            stdout=subprocess.DEVNULL,
+            cwd=process_path).wait()
 
 
     return molecules
