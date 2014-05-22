@@ -1,6 +1,22 @@
 class qsar {
+
+	user { 'qsar':
+		name => 'qsar',
+		password => 'qsar',
+		ensure => 'present',
+		groups => 'root',
+	}
+
 	package { 'build-essential':
 	    ensure => installed,
+	}
+
+	package { 'cmake':
+		ensure => installed,
+	}
+
+	package { 'gromacs':
+		ensure => installed,
 	}
 
 	package { 'git':
@@ -22,5 +38,13 @@ class qsar {
 	    ensure => link,
 	    target => '/usr/local/bin/virtualenvwrapper.sh',
 		require => Package['virtualenvwrapper'],
+	}
+
+	package { 'rabbitmq-server':
+		ensure => installed,
+	}
+
+	file { '/qsar/bin':
+		ensure => "directory",
 	}
 }
