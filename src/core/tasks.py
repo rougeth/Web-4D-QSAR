@@ -91,7 +91,7 @@ def main(dynamic):
             '-bt', 'cubic',
             '-f', 'lig.gro',
             '-o', 'lig_box.gro',
-            '-d', str(molecule.dynamic.box_size)],
+            '-d', '1.0'],
             cwd=process_path).wait()
 
         subprocess.Popen([
