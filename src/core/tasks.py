@@ -87,22 +87,20 @@ def main(dynamic):
             process_path, molecule_clean_filename))
 
         subprocess.Popen([
-            '/usr/local/gromacs/bin/editconf',
+            '/usr/bin/editconf',
             '-bt', 'cubic',
             '-f', 'lig.gro',
             '-o', 'lig_box.gro',
             '-d', str(molecule.dynamic.box_size)],
-            stdout=subprocess.DEVNULL,
             cwd=process_path).wait()
 
         subprocess.Popen([
-            '/usr/local/gromacs/bin/genbox',
-            '-cp', 'lig_box.gro',
-            '-cs', 'tip3p.gro',
-            '-o', 'lig_h2o.gro',
-            '-p', 'lig.top'],
-            stdout=subprocess.DEVNULL,
-            cwd=process_path).wait()
+           '/usr/bin/genbox',
+           '-cp', 'lig_box.gro',
+           '-cs', 'tip3p.gro',
+           '-o', 'lig_h2o.gro',
+           '-p', 'lig.top'],
+           cwd=process_path).wait()
 
 
     return molecules
