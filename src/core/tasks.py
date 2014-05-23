@@ -10,12 +10,6 @@ from core import utils
 
 
 @task
-def test_file():
-    with open('/qsar/src/files/dynamics/marco@rougeth.com/16/neutra.mol2_process/ffneutra.itp', 'r') as f:
-        pass
-
-
-@task
 def main(dynamic):
 
     # 1: Create a folder ('<filename>_process') for each .mol file. It will be
