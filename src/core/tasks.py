@@ -9,6 +9,22 @@ from core.models import Dynamic, Molecule
 from core import utils
 
 
+class MoleculeProcess:
+
+    BASE_DIR = getattr(settings, 'BASE_DIR')
+    QSAR_STATIC_DIR = getattr(settings, 'QSAR_STATIC_DIR')
+    TOPOLBUILD_DIR = '/opt/topolbuild1_2_1'
+
+    def __init__(self, molecule):
+        self.molecule = molecule
+        self.filename = molecule.file.path.split('/')[-1]
+        self.filename_without_extension = self.filename[:-5]
+        self.process_dir = '{}/{}_process'.format(
+            os.path.dirname(molecu.file.path),
+            self.filename
+        )
+
+
 @task
 def main(dynamic):
 
@@ -25,60 +41,58 @@ def main(dynamic):
 
     for molecule in molecules:
 
-        molecule_filename = molecule.file.path.split('/')[-1]
-        molecule_clean_filename = molecule_filename[:-5]
-        process_path = '{}/{}_process'.format(
-            # ../files/dynamics/<email>/<id>/
-            os.path.dirname(molecule.file.path),
-            # <id> from <id>_molecule.mol2
-            molecule_filename
-        )
+        process = MoleculeProcess(molecule)
 
 
         # Pepraring files
 
-        os.mkdir(process_path)
+        os.mkdir(process.process_dir)
 
         os.system('cp {} {}/{}'.format(
             # ../files/dynamics/<email>/<id>/<id>_molecule.mol2
-            molecule.file.path,
-            process_path,
-            molecule_filename
+            process.molecule.file.path,
+            process_dir,
+            process.filename
         ))
 
         os.system('cp {}/* {}/'.format(
-            QSAR_STATIC_FILES,
-            process_path
+            process.QSAR_STATIC_FILES,
+            process.process_dir
         ))
-
 
         # Topolbuild
 
-        topolbuild_path = '/opt/topolbuild1_2_1'
-
         subprocess.Popen([
             '/usr/local/bin/topolbuild',
-            '-n', '{}'.format(molecule.file.path[:-5]),
-            '-dir', '{}'.format(topolbuild_path),
-            '-ff', 'gaff'], cwd=process_path).wait()
-
+            '-n', '{}'.format(process.filename_without_extension),
+            '-dir', '{}'.format(process.TOPOLBUILD_DIR),
+            '-ff', 'gaff'], cwd=process.process_dir).wait()
 
         # Preparing files for gromacs
 
-        utils.remove_line(
-            '#include "ffusernb.itp"',
-            '{}/ff{}.itp'.format(process_path, molecule_clean_filename))
+        utils.remove_line('#include "ffusernb.itp"', '{}/ff{}.itp'.format(
+            process.process_dir,
+            process.filename_without_extension
+        ))
 
-        utils.replace_line('#include "gaff_spce.itp"', '#include "gaff tip3p.itp"',
-             '{}/{}.top'.format(process_path, molecule_clean_filename))
+        path = '{}/{}.top'.format(
+            process.process_dir,
+            process.filename_without_extension
+        )
+        utils.replace_line(
+            '#include "gaff_spce.itp"',
+            '#include "gaff tip3p.itp"',
+            path
+        )
 
         os.system('cat {0}/ion_water.itp >> {0}/ff{1}nb.itp'.format(
-            process_path, molecule_clean_filename))
+            process.process_dir, process.filename_without_extension))
 
         os.system('mv {0}/{1}.top {0}/lig.top'.format(
-            process_path, molecule_clean_filename))
+            process.process_dir, process.filename_without_extension))
+
         os.system('mv {0}/{1}.gro {0}/lig.gro'.format(
-            process_path, molecule_clean_filename))
+            process.process_dir, process.filename_without_extension))
 
         subprocess.Popen([
             '/usr/bin/editconf',
@@ -86,7 +100,7 @@ def main(dynamic):
             '-f', 'lig.gro',
             '-o', 'lig_box.gro',
             '-d', '1.0'],
-            cwd=process_path).wait()
+            cwd=process.process_dir).wait()
 
         subprocess.Popen([
            '/usr/bin/genbox',
@@ -94,7 +108,7 @@ def main(dynamic):
            '-cs', 'tip3p.gro',
            '-o', 'lig_h2o.gro',
            '-p', 'lig.top'],
-           cwd=process_path).wait()
+           cwd=process.process_dir).wait()
 
 
-    return molecules
+    return molecule
