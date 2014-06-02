@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div class="page-header">
+    <h1>{% trans "New Molecular Dynamic" %}</h1>
+    <p class="lead">Consectetur asperiores quibusdam beatae nulla nostrum vitae quaerat libero ab ullam deserunt. Modi temporibus ipsa debitis cum commodi mollitia tempore. Praesentium accusamus ut quaerat aperiam repellat qui. Maxime iure numquam.</p>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <form class="form-horizontal" role="form">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.email.label }}
+                <div class="col-sm-10">
+                    {{ form.email }}
+                    <span class="help-block">{% trans "This e-mail will be used to contact you when the dynamic got ready." %}</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputEmail3" class="col-sm-2 control-label">Email</label>
+                <div class="col-sm-10">
+                    <input type="email" class="form-control" id="inputEmail3" placeholder="Email">
+                    <span class="help-block">{% trans "This e-mail will be used to contact you when the dynamic got ready." %}</span>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-8"></div>
+</div>
+{% endblock %}

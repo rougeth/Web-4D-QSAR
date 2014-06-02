@@ -5,8 +5,10 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     # Examples:
-    url(r'^home$', 'core.views.home', name='home'),
+    url(r'^$', 'core.views.home', name='home'),
     url(r'^gromacs$', 'core.views.gromacs', name='home'),
+
+    url(r'^new-dynamic$', 'dynamics.views.new_dynamic', name='new_dynamic'),
 
     # url(r'^blog/', include('blog.urls')),
 
