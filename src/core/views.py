@@ -10,6 +10,8 @@ from core import tasks
 def home(request):
     return render(request, 'core/home.html')
 
+def how_it_works(request):
+    return render(render, 'core/how_it_works.html')
 
 def gromacs(request):
     molecule_formset = formset_factory(MoleculeForm)
