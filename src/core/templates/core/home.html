@@ -4,11 +4,12 @@
 {% block content %}
 <div class="page-header">
     <p class="pull-right">
-        <a href="/dynamic" class="btn btn-primary">New Dynamic</a>
+        <a href="{% url 'dynamics:new_dynamic' %}" class="btn btn-primary">New Dynamic</a>
     </p>
     <h1>W<span class="eb_webqsar">eb</span>QSAR</h1>
     <p class="lead">
-        {% trans "Open source web package to build and validate QSAR models." %}
+        {#% trans "Open source web package to build and validate QSAR models." % #}
+        Pacote web open source para gerar e validar modelos QSAR.
     </p>
 </div>
 <div class="row">
@@ -18,11 +19,6 @@
         <p>Sit repudiandae voluptatibus qui consequuntur explicabo! Alias veritatis voluptas illo iure iste, quidem voluptates blanditiis labore blanditiis consequuntur odio illo similique. Eaque voluptates consequatur dicta dicta expedita ipsum veritatis. Quo.</p>
     </div>
     <div class="col-md-4">
-        <h4>Version 0.11</h4>
-        <ul>
-            <li>Consectetur officia.</li>
-            <li>Adipisicing quaerat eius.</li>
-        </ul>
         <h4>Version 0.1</h4>
         <ul>
             <li>Sit eum dolor ex necessitatibus architecto.</li>
