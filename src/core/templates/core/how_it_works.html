@@ -1,10 +1,16 @@
 {% extends 'base.html' %}
+{% load static %}
 {% load i18n %}
 
 {% block content %}
 <div class="page-header">
-    <h1>{% trans "How it works" %}</h1>
-    <p class="lead">Adipisicing quos beatae exercitationem officiis cumque reprehenderit.</p>
-    <p>If you want to read about how this web site was built go to the <a href="">documentation</a> page.</p>
+    <h1>{% trans "Como WQSAR funciona" %}</h1>
+    <p class="lead">Se você deseja saber mais sobre como esse projeto foi desenvolvido, leia a <a href="{% url 'core:docs' %}">documentação</a>.</p>
 </div>
+<p>
+Lorem ea id commodi ab ullam autem! Saepe quas corrupti temporibus praesentium eius. Animi dolore dolore voluptatem a ad! Libero magnam sapiente incidunt explicabo aperiam excepturi vitae dolorum nostrum tempora?
+</p>
+<p>Dolor earum est architecto enim aliquam quas voluptates. Ex facilis labore veniam maiores dolorum corporis cumque omnis nam praesentium quo pariatur repellendus inventore molestias cumque qui id vel. Ipsa sequi?</p>
+<img src="{% static 'imgs/image.png' %}" alt="">
+<p>Adipisicing nihil explicabo quae soluta expedita ullam. Expedita corporis culpa aperiam doloribus placeat officiis cupiditate tenetur. Ducimus illo exercitationem nostrum ipsam pariatur error. Impedit minus perspiciatis tempora aut ullam fugit?</p>
 {% endblock %}

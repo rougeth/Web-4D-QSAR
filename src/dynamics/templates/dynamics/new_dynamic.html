@@ -8,35 +8,35 @@
     <p class="lead">Consectetur asperiores quibusdam beatae nulla nostrum vitae quaerat libero ab ullam deserunt. Modi temporibus ipsa debitis cum commodi mollitia tempore. Praesentium accusamus ut quaerat aperiam repellat qui. Maxime iure numquam.</p>
 </div>
 <div class="row">
-    <div class="col-md-6">
-        <form class="form-horizontal" role="form">
+    <div class="col-md-4">
+        <form class="form-horizontal" role="form" action="/dynamics/started" method="GET">
             {% csrf_token %}
             <div class="form-group">
-                <label for="{{ form.email.id_for_label }}" class="col-sm-2 control-label">{{ form.email.label }}</label>
-                <div class="col-sm-10">
+                <label for="{{ form.email.id_for_label }}" class="col-sm-3 control-label">{{ form.email.label }}</label>
+                <div class="col-sm-9">
                     {{ form.email|add_class:"form-control" }}
                     <span class="help-block">{% trans "This e-mail will be used to contact you when the dynamic got ready." %}</span>
                 </div>
             </div>
             <div class="form-group">
-                <label for="{{ form.box_size.id_for_label }}" class="col-sm-2 control-label">{{ form.box_size.label }}</label>
-                <div class="col-sm-10">
+                <label for="{{ form.box_size.id_for_label }}" class="col-sm-3 control-label">{{ form.box_size.label }}</label>
+                <div class="col-sm-9">
                     {{ form.box_size|add_class:"form-control" }}
                 </div>
             </div>
             <div class="form-group">
-                <label for="{{ form.file.id_for_label }}" class="col-sm-2 control-label">{{ form.file.label }}</label>
-                <div class="col-sm-10">
+                <label for="{{ form.file.id_for_label }}" class="col-sm-3 control-label">{{ form.file.label }}</label>
+                <div class="col-sm-9">
                     {{ form.file }}
                 </div>
             </div>
             <div class="form-group">
-                <div class="col-sm-offset-2 col-sm-10">
-                    <button type="submit" class="btn btn-default">Criar dinâmica</button>
+                <div class="col-sm-offset-3 col-sm-9">
+                    <button type="submit" class="btn btn-default">{% trans 'Start Dynamic' %}</button>
                 </div>
             </div>
         </form>
     </div>
-    <div class="col-md-6"></div>
+    <div class="col-md-8"></div>
 </div>
 {% endblock %}
