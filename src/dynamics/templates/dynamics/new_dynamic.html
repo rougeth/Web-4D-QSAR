@@ -9,25 +9,37 @@
 </div>
 <div class="row">
     <div class="col-md-4">
-        <form class="form-horizontal" role="form" action="/dynamics/started" method="GET">
+        <form class="form-horizontal" role="form" action="" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="form-group">
-                <label for="{{ form.email.id_for_label }}" class="col-sm-3 control-label">{{ form.email.label }}</label>
+                <label for="{{ dynamic_form.email.id_for_label }}" class="col-sm-3 control-label">{{ dynamic_form.email.label }}</label>
                 <div class="col-sm-9">
-                    {{ form.email|add_class:"form-control" }}
+                    {{ dynamic_form.email|add_class:"form-control" }}
                     <span class="help-block">{% trans "This e-mail will be used to contact you when the dynamic got ready." %}</span>
                 </div>
             </div>
             <div class="form-group">
-                <label for="{{ form.box_size.id_for_label }}" class="col-sm-3 control-label">{{ form.box_size.label }}</label>
+                <label for="{{ dynamic_form.box_size.id_for_label }}" class="col-sm-3 control-label">{{ dynamic_form.box_size.label }}</label>
                 <div class="col-sm-9">
-                    {{ form.box_size|add_class:"form-control" }}
+                    {{ dynamic_form.box_size|add_class:"form-control" }}
                 </div>
             </div>
+            {{ molecule_formset.management_form }}
+            {% for f in molecule_formset %}
             <div class="form-group">
-                <label for="{{ form.file.id_for_label }}" class="col-sm-3 control-label">{{ form.file.label }}</label>
+                <label for="{{ f.file.id_for_label }}" class="col-sm-3 control-label">{{ f.file.label }}</label>
                 <div class="col-sm-9">
-                    {{ form.file }}
+                    {{ f.file }}
+                </div>
+            </div>
+            {% endfor %}
+            <div class="form-group">
+                <label for="add-one-more-file" class="col-sm-3 control-label"></label>
+                <div class="col-sm-9">
+                    <button type="button" class="btn btn-default btn-sm" id="add-one-more-file">
+                        <span class="glyphicon glyphicon-plus"></span>
+                        {% trans 'Add one more file' %}
+                    </button>
                 </div>
             </div>
             <div class="form-group">
@@ -39,4 +51,24 @@
     </div>
     <div class="col-md-8"></div>
 </div>
+{% endblock %}
+
+{% block footer_js %}
+<script>
+    $(document).ready(function() {
+        var inputs = 0;
+
+        $('#add-one-more-file').click(function() {
+            console.log('click');
+            $('#id_form-' + inputs + '-file')
+                .clone()
+                .attr('id', 'id_form-' + (inputs + 1) + '-file')
+                .attr('name', 'form-' + (inputs + 1) + '-file')
+                .val('')
+                .insertAfter('#id_form-' + inputs + '-file');
+            inputs = inputs + 1;
+            $('#id_form-TOTAL_FORMS').val(inputs + 1);
+        });
+    });
+</script>
 {% endblock %}
