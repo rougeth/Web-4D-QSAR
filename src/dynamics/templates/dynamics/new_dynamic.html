@@ -40,10 +40,16 @@
             <div class="form-group">
                 <label for="add-one-more-file" class="col-sm-3 control-label"></label>
                 <div class="col-sm-9">
-                    <button type="button" class="btn btn-default btn-sm" id="add-one-more-file">
-                        <span class="glyphicon glyphicon-plus"></span>
-                        {% trans 'Add one more file' %}
-                    </button>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default btn-sm" id="more-files">
+                            <span class="glyphicon glyphicon-plus"></span>
+                            {% trans 'More files' %}
+                        </button>
+                        <button type="button" class="btn btn-default btn-sm" id="less-files">
+                            <span class="glyphicon glyphicon-minus"></span>
+                            {% trans 'Less files' %}
+                        </button>
+                    </div>
                 </div>
             </div>
             <div class="form-group">
@@ -62,7 +68,7 @@
     $(document).ready(function() {
         var inputs = 0;
 
-        $('#add-one-more-file').click(function() {
+        $('#more-files').click(function() {
             console.log('click');
             $('#id_form-' + inputs + '-file')
                 .clone()
@@ -72,6 +78,14 @@
                 .insertAfter('#id_form-' + inputs + '-file');
             inputs = inputs + 1;
             $('#id_form-TOTAL_FORMS').val(inputs + 1);
+        });
+
+        $('#less-files').click(function() {
+            if(inputs > 0) {
+                $('#id_form-' + inputs + '-file').remove();
+                inputs = inputs - 1;
+                $('#id_form-TOTAL_FORMS').val(inputs + 1);
+            }
         });
     });
 </script>
