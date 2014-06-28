@@ -11,9 +11,12 @@
     <div class="col-md-4">
         <form class="form-horizontal" role="form" action="" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
+            {{ dynamic_form.non_field_errors }}
+            {{ molecule_formset.non_field_errors }}
             <div class="form-group">
                 <label for="{{ dynamic_form.email.id_for_label }}" class="col-sm-3 control-label">{{ dynamic_form.email.label }}</label>
                 <div class="col-sm-9">
+                    {{ dynamic_form.email.errors }}
                     {{ dynamic_form.email|add_class:"form-control" }}
                     <span class="help-block">{% trans "This e-mail will be used to contact you when the dynamic got ready." %}</span>
                 </div>
@@ -21,6 +24,7 @@
             <div class="form-group">
                 <label for="{{ dynamic_form.box_size.id_for_label }}" class="col-sm-3 control-label">{{ dynamic_form.box_size.label }}</label>
                 <div class="col-sm-9">
+                    {{ dynamic_form.box_size.errors }}
                     {{ dynamic_form.box_size|add_class:"form-control" }}
                 </div>
             </div>

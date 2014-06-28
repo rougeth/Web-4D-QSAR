@@ -12,13 +12,13 @@ def new_dynamic(request):
 
     if request.method == 'POST':
         dynamic_form = DynamicForm(request.POST)
-        molecule_form = molecule_formset(request.POST, request.FILES)
+        molecule_formset = molecule_formset(request.POST, request.FILES)
 
-        if dynamic_form.is_valid() and molecule_form.is_valid():
+        if dynamic_form.is_valid() and molecule_formset.is_valid():
 
             new_dynamic = dynamic_form.save()
 
-            for i, f in enumerate(molecule_form):
+            for i, f in enumerate(molecule_formset):
                 new_molecule = Molecule(
                     dynamic=new_dynamic,
                     file=f.cleaned_data['file']
@@ -26,6 +26,14 @@ def new_dynamic(request):
                 new_molecule.save()
 
             return HttpResponse('ok')
+
+        else:
+            context = {
+                'dynamic_form': dynamic_form,
+                'molecule_formset': molecule_formset,
+            }
+            return render(request, 'dynamics/new_dynamic.html', context)
+
 
     context = {
         'dynamic_form': DynamicForm(),
