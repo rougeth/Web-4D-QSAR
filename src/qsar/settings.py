@@ -96,8 +96,9 @@ TEMPLATE_DIRS = (
 
 STATIC_URL = '/static/'
 
-# QSAR
-QSAR_STATIC_DIR = os.path.join(BASE_DIR, 'files/static')
+# Tasks settings
+WEB_4D_QSAR_STATIC_DIR  = os.path.join(BASE_DIR, 'files/static')
+TOPOLBUILD_DIR = '/opt/topolbuild1_2_1'
 
 # Celery settings
 BROKER_URL = 'amqp://guest:guest@localhost:5672//'

@@ -4,6 +4,7 @@ from django.forms.formsets import formset_factory
 
 from dynamics.models import Molecule
 from dynamics.forms import DynamicForm, MoleculeForm
+from dynamics import tasks
 
 
 def new_dynamic(request):
@@ -22,8 +23,10 @@ def new_dynamic(request):
                 new_molecule = Molecule(
                     dynamic=new_dynamic,
                     file=f.cleaned_data['file']
-                )
-                new_molecule.save()
+                ).save()
+
+            # Starts the task to process the new dynamic
+            tasks.molecule_dynamic_task.delay(new_dynamic)
 
             return HttpResponse('ok')
 
