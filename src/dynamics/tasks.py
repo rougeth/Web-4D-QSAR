@@ -5,6 +5,7 @@ from django.conf import settings
 from celery import task
 
 from dynamics.models import (Dynamic, Molecule)
+from dynamics import utils
 
 
 class MoleculeProcess:
@@ -43,15 +44,16 @@ def molecule_dynamic_task(dynamic):
         os.mkdir(molecule.process_dir)
 
         # Copy static files for each process folder.
-        subprocess.Popen(['cp',
+        os.system('cp {} {}/{}'.format(
             molecule.molecule.file.path,
-            '{}/{}'.format(molecule.process_dir, molecule.filename)
-        ])
+            molecule.process_dir,
+            molecule.filename
+        ))
 
-        subprocess.Popen(['cp',
-            '{}/*'.format(WEB_4D_QSAR_STATIC_DIR),
-            '{}/'.format(molecule.process_dir)
-        ])
+        os.system('cp {}/* {}'.format(
+            WEB_4D_QSAR_STATIC_DIR,
+            molecule.process_dir
+        ))
 
         # Execute Topolbuild.
         subprocess.Popen(['/usr/bin/topolbuild',
