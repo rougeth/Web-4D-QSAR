@@ -5,7 +5,7 @@ from django.conf import settings
 from celery import Celery
 
 # set the default Django settings module for the 'celery' program.
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'qsar.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'web-4d-qsar.settings')
 
 app = Celery('qsar')
 

@@ -54,9 +54,9 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'qsar.urls'
+ROOT_URLCONF = 'web-4d-qsar.urls'
 
-WSGI_APPLICATION = 'qsar.wsgi.application'
+WSGI_APPLICATION = 'web-4d-qsar.wsgi.application'
 
 
 # Database
