@@ -1,1 +1,1 @@
-include qsar
+include web_4d_qsar
