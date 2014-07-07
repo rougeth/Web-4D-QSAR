@@ -32,6 +32,14 @@ The **Web 4D-QSAR** was built and tested using Ubuntu 14.04 LTS but it should ru
 $ sudo apt-get install build-essential cmake git python python-dev python-pip rabbitmq-server
 ```
 
+* virtualenvwrapper
+
+```
+$ pip install virtualenvwrapper
+$ echo "export WORKON_HOME=$HOME/.virtualenvs" >> ~/.bashrc
+$ echo "source /usr/local/bin/virtualenvwrapper.sh" >> ~/.bashrc
+```
+
 ### Dynamic requirements
 
 #### Gromacs
