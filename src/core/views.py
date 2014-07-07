@@ -4,7 +4,6 @@ from django.shortcuts import render, redirect
 
 from core.forms import DynamicForm, MoleculeForm
 from core.models import Dynamic, Molecule
-from core import tasks
 
 
 def home(request):
