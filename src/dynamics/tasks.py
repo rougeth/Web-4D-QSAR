@@ -74,7 +74,7 @@ def molecule_dynamic_task(dynamic):
         )
         utils.replace_line(
             '#include "gaff_spce.itp"',
-            '#include "gaff tip3p.itp"',
+            '#include "gaff_tip3p.itp"',
             path
         )
 
@@ -102,5 +102,42 @@ def molecule_dynamic_task(dynamic):
            '-o', 'lig_h2o.gro',
            '-p', 'lig.top'],
            cwd=molecule.process_dir).wait()
+
+        subprocess.Popen([
+           '/usr/bin/grompp',
+           '-f', 'st.mdp',
+           '-c', 'lig_h2o.gro',
+           '-p', 'lig.top',
+           '-o', 'st.tpr'],
+           cwd=molecule.process_dir).wait()
+
+        with open('{}/lig.top'.format(molecule.process_dir), 'r') as ligtop:
+
+            for line in ligtop.readlines():
+                if line.startswith('; total molecule charge ='):
+                    break
+
+        line = line.split(' ')[-1][:-1]
+        charge = float(line)
+        if charge > 0:
+            subprocess.Popen([
+                '/usr/bin/genion',
+                '-s', 'st.tpr',
+                '-nn', str(charge),
+                '-o', 'st.gro'],
+            cwd=molecule.process_dir).wait()
+
+            ion_added = True
+
+
+
+        else:
+            subprocess.Popen([
+                '/usr/bin/genion',
+                '-s', 'st.tpr',
+                '-np', str(abs(charge)),
+                '-o', 'st.gro'],
+            cwd=molecule.process_dir).wait()
+
 
     return True
