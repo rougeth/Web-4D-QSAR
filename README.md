@@ -67,7 +67,7 @@ $ sudo ln -s /opt/topolbuild1_2_1/src/topolbuild /usr/bin/topolbuild
 
 Clone the **Web 4D-QSAR** git repository and enter the project folder:
 
-`$ git clone https://github.com/rougeth/web-4d-qsar && cd qsar`
+`$ git clone https://github.com/rougeth/web-4d-qsar && cd web-4d-qsar`
 
 ### Preparing the environment
 
@@ -75,11 +75,12 @@ Clone the **Web 4D-QSAR** git repository and enter the project folder:
 
 	`$ mkvirtualenv web-4d-qsar -p path_to_python3`
 	
+	In Ubuntu 14.04, the path to python 3 is */usr/bin/python3*
 
 - To access the virtualenv you just created: `$ workon qsar`
 	Note that you will see the name of the environment in the PS1 variable: `(env_name) $`
 
-- Go to `src/` folder and install the required Python packages (you need to have the env activated):
+- Install the required Python packages (you need to have the env activated):
 
 	`$ pip install -r requirements.txt`
 
