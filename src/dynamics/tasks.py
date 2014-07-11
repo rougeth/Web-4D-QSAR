@@ -129,9 +129,7 @@ def molecule_dynamic_task(dynamic):
 
             ion_added = True
 
-
-
-        else:
+        elif charge < 0:
             subprocess.Popen([
                 '/usr/bin/genion',
                 '-s', 'st.tpr',
