@@ -93,7 +93,8 @@ def molecule_dynamic_task(dynamic):
             '-f', 'lig.gro',
             '-o', 'lig_box.gro',
             '-d', '1.0'],
-            cwd=molecule.process_dir).wait()
+            cwd=molecule.process_dir
+        ).wait()
 
         subprocess.Popen([
            '/usr/bin/genbox',
@@ -101,7 +102,8 @@ def molecule_dynamic_task(dynamic):
            '-cs', 'tip3p.gro',
            '-o', 'lig_h2o.gro',
            '-p', 'lig.top'],
-           cwd=molecule.process_dir).wait()
+           cwd=molecule.process_dir
+        ).wait()
 
         subprocess.Popen([
            '/usr/bin/grompp',
@@ -109,10 +111,10 @@ def molecule_dynamic_task(dynamic):
            '-c', 'lig_h2o.gro',
            '-p', 'lig.top',
            '-o', 'st.tpr'],
-           cwd=molecule.process_dir).wait()
+           cwd=molecule.process_dir
+        ).wait()
 
         with open('{}/lig.top'.format(molecule.process_dir), 'r') as ligtop:
-
             for line in ligtop.readlines():
                 if line.startswith('; total molecule charge ='):
                     break
@@ -120,22 +122,29 @@ def molecule_dynamic_task(dynamic):
         line = line.split(' ')[-1][:-1]
         charge = float(line)
         if charge > 0:
+            # it need to be verified
+            group_option = subprocess.Popen(['echo', '4'],
+                stdout=subprocess.PIPE)
+
             subprocess.Popen([
                 '/usr/bin/genion',
                 '-s', 'st.tpr',
                 '-nn', str(charge),
                 '-o', 'st.gro'],
-            cwd=molecule.process_dir).wait()
-
-            ion_added = True
+                cwd=molecule.process_dir,
+                stdin=group_option.stdout
+            ).wait()
 
         elif charge < 0:
+            group_option = subprocess.Popen(['echo', '4'],
+                stdout=subprocess.PIPE)
             subprocess.Popen([
                 '/usr/bin/genion',
                 '-s', 'st.tpr',
                 '-np', str(abs(charge)),
                 '-o', 'st.gro'],
-            cwd=molecule.process_dir).wait()
-
+                cwd=molecule.process_dir,
+                stdin=group_option.stdout
+            ).wait()
 
     return True
