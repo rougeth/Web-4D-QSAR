@@ -5,7 +5,7 @@ Open source web system to generate and validate QSAR modules.
 
 ## Requirements
 
-The **Web 4D-QSAR** was built and tested using Ubuntu 14.04 LTS but it should run without problems in any Linux distribution that supports the following softwares: 
+The **Web 4D-QSAR** was built and tested using Ubuntu 14.04 LTS but it should run without problems in any Linux distribution that supports the following softwares:
 
 * [Git](http://git-scm.com/) >= ?
 * [Python](https://www.python.org/) >= 3
@@ -52,7 +52,7 @@ $ sudo apt-get install gromacs
 
 ```
 $ cd /tmp
-$ curl -s http://www.gromacs.org/@api/deki/files/40/=topolbuild1_2_1.tgz -o ./topolbuild1_2_1.tgz
+$ wget -nv http://www.gromacs.org/@api/deki/files/40/=topolbuild1_2_1.tgz -o topolbuild1_2_1.tgz
 $ tar xvfz topolbuild1_2_1.tgz
 $ cd topolbuild1_2_1/src
 $ make
@@ -74,7 +74,7 @@ Clone the **Web 4D-QSAR** git repository and enter the project folder:
 - Use [virtualenvwrapper](http://virtualenvwrapper.readthedocs.org/en/latest/) to create a virtual environment for python:
 
 	`$ mkvirtualenv web-4d-qsar -p path_to_python3`
-	
+
 	In Ubuntu 14.04, the path to python 3 is */usr/bin/python3*
 
 - To access the virtualenv you just created: `$ workon qsar`
@@ -91,6 +91,9 @@ For the next steps, you must be at `src/` folder.
 ### Preparing the database
 
 `$ python manage.py syncdb`
+
+*No need of creating superuser.*
+
 
 ### Running Django
 
