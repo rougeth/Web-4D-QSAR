@@ -122,7 +122,6 @@ def molecule_dynamic_task(dynamic):
         line = line.split(' ')[-1][:-1]
         charge = float(line)
         if charge > 0:
-            # it need to be verified
             group_option = subprocess.Popen(['echo', '4'],
                 stdout=subprocess.PIPE)
 
@@ -138,6 +137,7 @@ def molecule_dynamic_task(dynamic):
         elif charge < 0:
             group_option = subprocess.Popen(['echo', '4'],
                 stdout=subprocess.PIPE)
+
             subprocess.Popen([
                 '/usr/bin/genion',
                 '-s', 'st.tpr',
