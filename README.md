@@ -109,6 +109,6 @@ Open a new terminal, access the virtualenv that was created with `$ workon web-4
 
 #### Running worker
 
-`$ celery -A qsar worker -l info`
+`$ celery -A web-4d-qsar worker -l info`
 
 Now, go to your favorite browser, type `http://127.0.0.1:8000` and see the celery working.
