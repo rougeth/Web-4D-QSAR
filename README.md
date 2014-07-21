@@ -52,7 +52,7 @@ $ sudo apt-get install gromacs
 
 ```
 $ cd /tmp
-$ wget -nv http://www.gromacs.org/@api/deki/files/40/=topolbuild1_2_1.tgz -o topolbuild1_2_1.tgz
+$ wget -nv http://www.gromacs.org/@api/deki/files/40/=topolbuild1_2_1.tgz -O topolbuild1_2_1.tgz
 $ tar xvfz topolbuild1_2_1.tgz
 $ cd topolbuild1_2_1/src
 $ make
