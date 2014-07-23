@@ -36,7 +36,8 @@ def molecule_dynamic_task(dynamic):
     WEB_4D_QSAR_STATIC_DIR = getattr(settings, 'WEB_4D_QSAR_STATIC_DIR')
     TOPOLBUILD_DIR = getattr(settings, 'TOPOLBUILD_DIR')
 
-    molecules = [MoleculeProcess(m) for m in Molecule.objects.filter(dynamic=dynamic)]
+    molecules = [MoleculeProcess(m)
+        for m in Molecule.objects.filter(dynamic=dynamic)]
 
     for molecule in molecules:
 
@@ -134,6 +135,24 @@ def molecule_dynamic_task(dynamic):
                 stdin=group_option.stdout
             ).wait()
 
+            with open('%s/lig.top' % molecule.process_dir) as f:
+                new_ligtop = []
+                lines = f.readlines()
+                for line in lines:
+                    if line.startswith('SOL'):
+                        line = line.split()
+                        sol = int(line[1]) + 1
+                        line[1] = str(sol)
+                        line = ' '.join(line) + '\n'
+
+                    new_ligtop.append(line)
+
+                new_ligtop.append('Cl 1\n')
+
+            with open('%s/lig.top' % molecule.process_dir, 'w') as f:
+                for line in new_ligtop:
+                    f.write(line)
+
         elif charge < 0:
             group_option = subprocess.Popen(['echo', '4'],
                 stdout=subprocess.PIPE)
@@ -146,5 +165,23 @@ def molecule_dynamic_task(dynamic):
                 cwd=molecule.process_dir,
                 stdin=group_option.stdout
             ).wait()
+
+            with open('%s/lig.top' % molecule.process_dir) as f:
+                new_ligtop = []
+                lines = f.readlines()
+                for line in lines:
+                    if line.startswith('SOL'):
+                        line = line.split()
+                        sol = int(line[1]) - 1
+                        line[1] = str(sol)
+                        line = ' '.join(line) + '\n'
+
+                    new_ligtop.append(line)
+
+                new_ligtop.append('Na 1\n')
+
+            with open('%s/lig.top' % molecule.process_dir, 'w') as f:
+                for line in new_ligtop:
+                    f.write(line)
 
     return True
