@@ -28,7 +28,11 @@ def new_dynamic(request):
             # Starts the task to process the new dynamic
             tasks.molecule_dynamic_task.delay(new_dynamic)
 
-            return HttpResponse('ok')
+            context = {
+                    'email': new_dynamic.email,
+            }
+
+            return render(request, 'dynamics/dynamic_started.html', context)
 
         else:
             context = {
