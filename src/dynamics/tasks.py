@@ -35,16 +35,24 @@ def molecule_dynamic_task(dynamic):
     BASE_DIR = getattr(settings, 'BASE_DIR')
     WEB_4D_QSAR_STATIC_DIR = getattr(settings, 'WEB_4D_QSAR_STATIC_DIR')
     TOPOLBUILD_DIR = getattr(settings, 'TOPOLBUILD_DIR')
+    CELERY_OFF = getattr(settings, 'CELERY_OFF')
+
+    if CELERY_OFF:
+        return True
 
     molecules = [MoleculeProcess(m)
         for m in Molecule.objects.filter(dynamic=dynamic)]
 
-    for molecule in molecules:
+    for _n, molecule in enumerate(molecules):
+
+        print('Starting %s molecule' % _n)
 
         # Create a folder for each molecule.
+        print('Create a folder for the molecule')
         os.mkdir(molecule.process_dir)
 
         # Copy static files for each process folder.
+        print('Copy static files')
         os.system('cp {} {}/{}'.format(
             molecule.molecule.file.path,
             molecule.process_dir,
@@ -57,12 +65,14 @@ def molecule_dynamic_task(dynamic):
         ))
 
         # Execute Topolbuild.
+        print('Call topolbuild')
         subprocess.Popen(['/usr/bin/topolbuild',
             '-n', molecule.filename_without_extension,
             '-dir', TOPOLBUILD_DIR,
             '-ff', 'gaff'], cwd=molecule.process_dir).wait()
 
         # Preparing files for gromacs
+        print('Preparing files for gromacs')
 
         utils.remove_line('#include "ffusernb.itp"', '{}/ff{}.itp'.format(
             molecule.process_dir,
@@ -115,6 +125,8 @@ def molecule_dynamic_task(dynamic):
            cwd=molecule.process_dir
         ).wait()
 
+        print('Verify charge')
+
         with open('{}/lig.top'.format(molecule.process_dir), 'r') as ligtop:
             for line in ligtop.readlines():
                 if line.startswith('; total molecule charge ='):
@@ -123,6 +135,7 @@ def molecule_dynamic_task(dynamic):
         line = line.split(' ')[-1][:-1]
         charge = float(line)
         if charge > 0:
+            print('Fix charge')
             group_option = subprocess.Popen(['echo', '4'],
                 stdout=subprocess.PIPE)
 
@@ -154,6 +167,7 @@ def molecule_dynamic_task(dynamic):
                     f.write(line)
 
         elif charge < 0:
+            print('Fix charge')
             group_option = subprocess.Popen(['echo', '4'],
                 stdout=subprocess.PIPE)
 
@@ -183,5 +197,121 @@ def molecule_dynamic_task(dynamic):
             with open('%s/lig.top' % molecule.process_dir, 'w') as f:
                 for line in new_ligtop:
                     f.write(line)
+
+        if charge == 0:
+            struct_file = 'lig_h2o.gro'
+        else:
+            struct_file = 'st.gro'
+
+
+        # dinamica.sh
+        print('Dinamic')
+        subprocess.Popen([
+            '/usr/bin/grompp',
+            '-f', 'st.mdp',
+            '-c', struct_file,
+            '-p', 'lig.top',
+            '-o', 'st.tpr'],
+            cwd=molecule.process_dir,
+        ).wait()
+
+        subprocess.Popen([
+            '/usr/bin/mdrun',
+            '-s', 'st.tpr',
+            '-o', 'st.trr',
+            '-c', 'cg.gro',
+            '-g', 'st.log',
+            '-e', 'st.edr'],
+            cwd=molecule.process_dir,
+        ).wait()
+
+        subprocess.Popen([
+            '/usr/bin/grompp',
+            '-f', 'cg.mdp',
+            '-c', 'cg.gro',
+            '-p', 'lig.top',
+            '-o', 'cg.tpr'],
+            cwd=molecule.process_dir,
+        ).wait()
+
+        subprocess.Popen([
+            '/usr/bin/mdrun',
+            '-s', 'cg.tpr',
+            '-o', 'cg.trr',
+            '-c', 'gs.gro',
+            '-g', 'cg.log',
+            '-e', 'cg.edr'],
+            cwd=molecule.process_dir,
+        ).wait()
+
+        subprocess.Popen([
+            '/usr/bin/grompp',
+            '-f', 'gs.mdp',
+            '-c', 'cg.gro',
+            '-p', 'lig.top',
+            '-o', 'gs.tpr',
+            '-maxwarn', '2'],
+            cwd=molecule.process_dir,
+        ).wait()
+
+        subprocess.Popen([
+            '/usr/bin/mdrun',
+            '-s', 'gs.tpr',
+            '-o', 'gs.trr',
+            '-c', 'pr.gro',
+            '-g', 'gs.log',
+            '-e', 'gs.edr'],
+            cwd=molecule.process_dir,
+        ).wait()
+
+        # Dinamic
+        # PR
+        print('PR')
+        subprocess.Popen([
+            '/usr/bin/grompp',
+            '-f', 'pr.mdp',
+            '-c', 'pr.gro',
+            '-p', 'lig.top',
+            '-o', 'pr.tpr'],
+            cwd=molecule.process_dir,
+        ).wait()
+
+        subprocess.Popen([
+            '/usr/bin/mdrun',
+            '-s', 'pr.tpr',
+            '-o', 'pr.trr',
+            '-c', 'md50.gro',
+            '-g', 'pr.log',
+            '-e', 'pr.edr'],
+            cwd=molecule.process_dir,
+        ).wait()
+
+        ks = [50, 100, 200, 350, 300]
+        for i, k in enumerate(ks):
+            print(k)
+            subprocess.Popen([
+                '/usr/bin/grompp',
+                '-f', 'md%s.mdp',
+                '-c', 'md%s.gro' % k,
+                '-p', 'lig.top',
+                '-o', 'md%s.tpr' % k],
+                cwd=molecule.process_dir,
+            ).wait()
+
+            try:
+                c_arg = 'md%s.gro' % ks[i+1]
+            except IndexError:
+                c_arg = 'pmd.gro'
+
+
+            subprocess.Popen([
+                '/usr/bin/mdrun',
+                '-s', 'md%s.tpr' % k,
+                '-o', 'md%s.trr' % k,
+                '-c', c_arg,
+                '-g', 'md%s.log' % k,
+                '-e', 'md%s.edr' % k],
+                cwd=molecule.process_dir,
+            ).wait()
 
     return True
