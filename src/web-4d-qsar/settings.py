@@ -69,6 +69,10 @@ DATABASES = {
     }
 }
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = 25
+
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
 
@@ -101,5 +105,6 @@ WEB_4D_QSAR_STATIC_DIR  = os.path.join(BASE_DIR, 'files/static')
 TOPOLBUILD_DIR = '/opt/topolbuild1_2_1'
 
 # Celery settings
+CELERY_OFF = False
 BROKER_URL = 'amqp://guest:guest@localhost:5672//'
 # CELERYD_CONCURRENCY = 4
