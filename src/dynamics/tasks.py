@@ -211,9 +211,13 @@ def molecule_dynamic_task(dynamic):
             '-f', 'st.mdp',
             '-c', struct_file,
             '-p', 'lig.top',
-            '-o', 'st.tpr'],
+            '-o', 'st.tpr',
+            '-maxwarn', '1'],
             cwd=molecule.process_dir,
         ).wait()
+        if not os.path.exists('%s/st.tpr' % molecule.process_dir):
+            print('%s/st.tpr does not exists.' % molecule.process_dir)
+            return False
 
         subprocess.Popen([
             '/usr/bin/mdrun',
@@ -224,6 +228,9 @@ def molecule_dynamic_task(dynamic):
             '-e', 'st.edr'],
             cwd=molecule.process_dir,
         ).wait()
+        if not os.path.exists('%s/cg.gro' % molecule.process_dir):
+            print('%s/cg.gro does not exists.' % molecule.process_dir)
+            return False
 
         subprocess.Popen([
             '/usr/bin/grompp',
@@ -233,6 +240,9 @@ def molecule_dynamic_task(dynamic):
             '-o', 'cg.tpr'],
             cwd=molecule.process_dir,
         ).wait()
+        if not os.path.exists('%s/cg.tpr' % molecule.process_dir):
+            print('%s/cg.tpr does not exists.' % molecule.process_dir)
+            return False
 
         subprocess.Popen([
             '/usr/bin/mdrun',
@@ -243,6 +253,9 @@ def molecule_dynamic_task(dynamic):
             '-e', 'cg.edr'],
             cwd=molecule.process_dir,
         ).wait()
+        if not os.path.exists('%s/gs.gro' % molecule.process_dir):
+            print('%s/gs.gro does not exists.' % molecule.process_dir)
+            return False
 
         subprocess.Popen([
             '/usr/bin/grompp',
@@ -253,16 +266,27 @@ def molecule_dynamic_task(dynamic):
             '-maxwarn', '2'],
             cwd=molecule.process_dir,
         ).wait()
+        if not os.path.exists('%s/gs.tpr' % molecule.process_dir):
+            print('%s/gs.tpr does not exists.' % molecule.process_dir)
+            return False
 
+        # Erro
+        # subprocess.Popen([
+        #     '/usr/bin/mdrun',
+        #     '-s', 'gs.tpr',
+        #     '-o', 'gs.trr',
+        #     '-c', 'pr.gro',
+        #     '-g', 'gs.log',
+        #     '-e', 'gs.edr'],
+        #     cwd=molecule.process_dir,
+        # ).wait()
         subprocess.Popen([
-            '/usr/bin/mdrun',
-            '-s', 'gs.tpr',
-            '-o', 'gs.trr',
-            '-c', 'pr.gro',
-            '-g', 'gs.log',
-            '-e', 'gs.edr'],
+            '/bin/cp', 'cg.gro', 'pr.gro'],
             cwd=molecule.process_dir,
         ).wait()
+        if not os.path.exists('%s/pr.gro' % molecule.process_dir):
+            print('%s/pr.gro does not exists.' % molecule.process_dir)
+            return False
 
         # Dinamic
         # PR
@@ -272,9 +296,13 @@ def molecule_dynamic_task(dynamic):
             '-f', 'pr.mdp',
             '-c', 'pr.gro',
             '-p', 'lig.top',
-            '-o', 'pr.tpr'],
+            '-o', 'pr.tpr',
+            '-maxwarn', '2'],
             cwd=molecule.process_dir,
         ).wait()
+        if not os.path.exists('%s/pr.tpr' % molecule.process_dir):
+            print('%s/pr.tpr does not exists.' % molecule.process_dir)
+            return False
 
         subprocess.Popen([
             '/usr/bin/mdrun',
@@ -285,24 +313,30 @@ def molecule_dynamic_task(dynamic):
             '-e', 'pr.edr'],
             cwd=molecule.process_dir,
         ).wait()
+        if not os.path.exists('%s/md50.gro' % molecule.process_dir):
+            print('%s/md50.gro does not exists.' % molecule.process_dir)
+            return False
 
         ks = [50, 100, 200, 350, 300]
         for i, k in enumerate(ks):
             print(k)
             subprocess.Popen([
                 '/usr/bin/grompp',
-                '-f', 'md%s.mdp',
+                '-f', 'md%s.mdp' % k,
                 '-c', 'md%s.gro' % k,
                 '-p', 'lig.top',
-                '-o', 'md%s.tpr' % k],
+                '-o', 'md%s.tpr' % k,
+                '-maxwarn', '1'],
                 cwd=molecule.process_dir,
             ).wait()
+            if not os.path.exists('%s/md%s.gro' % (molecule.process_dir, k)):
+                print('%s/md%s.gro does not exists.' % (molecule.process_dir, k))
+                return False
 
             try:
                 c_arg = 'md%s.gro' % ks[i+1]
             except IndexError:
                 c_arg = 'pmd.gro'
-
 
             subprocess.Popen([
                 '/usr/bin/mdrun',
@@ -313,5 +347,8 @@ def molecule_dynamic_task(dynamic):
                 '-e', 'md%s.edr' % k],
                 cwd=molecule.process_dir,
             ).wait()
+            if not os.path.exists('%s/%s' % (molecule.process_dir, c_arg)):
+                print('%s/%s does not exists.' % (molecule.process_dir, c_arg))
+                return False
 
     return True
