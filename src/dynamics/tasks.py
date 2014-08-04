@@ -8,6 +8,11 @@ from dynamics.models import (Dynamic, Molecule)
 from dynamics.utils import MoleculeProcess, remove_line, replace_line
 
 
+@task(name='molecular_dynamics')
+def molecular_dynamics():
+    return True
+
+
 @task
 def molecule_dynamic_task(dynamic):
 
