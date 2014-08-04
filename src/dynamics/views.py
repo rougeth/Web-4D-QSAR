@@ -26,7 +26,7 @@ def new_dynamic(request):
                 ).save()
 
             # Starts the task to process the new dynamic
-            tasks.molecule_dynamic_task.delay(new_dynamic)
+            tasks.molecular_dynamics.delay(new_dynamic)
 
             context = {
                     'email': new_dynamic.email,
