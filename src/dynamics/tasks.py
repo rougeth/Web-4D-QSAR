@@ -3,13 +3,26 @@ import subprocess
 
 from django.conf import settings
 from celery import task
+from celery.utils.log import get_task_logger
 
 from dynamics.models import (Dynamic, Molecule)
 from dynamics.utils import MoleculeProcess, remove_line, replace_line
 
 
-@task(name='molecular_dynamics')
+BASE_DIR = getattr(settings, 'BASE_DIR')
+STATIC_DIR = getattr(settings, 'WEB_4D_QSAR_STATIC_DIR')
+TOPOLBUILD_DIR = getattr(settings, 'TOPOLBUILD_DIR')
+CELERY_OFF = getattr(settings, 'CELERY_OFF')
+
+logger = get_task_logger(__name__)
+
+
+@task()
 def molecular_dynamics():
+    if CELERY_OFF:
+        logger.info('Celery off. Nothing will be executed here.')
+        return True
+    
     return True
 
 
