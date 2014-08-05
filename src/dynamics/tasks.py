@@ -74,7 +74,8 @@ def task_prepare_files_for_gromacs(molecule):
         '-bt', 'cubic',
         '-f', 'lig.gro',
         '-o', 'lig_box.gro',
-        '-d', '1.0'],
+        '-d', '1.0',
+        '-quiet'],
         cwd=molecule.process_dir
     ).wait()
 
@@ -83,7 +84,8 @@ def task_prepare_files_for_gromacs(molecule):
        '-cp', 'lig_box.gro',
        '-cs', 'tip3p.gro',
        '-o', 'lig_h2o.gro',
-       '-p', 'lig.top'],
+       '-p', 'lig.top',
+       '-quiet'],
        cwd=molecule.process_dir
     ).wait()
 
@@ -92,7 +94,8 @@ def task_prepare_files_for_gromacs(molecule):
        '-f', 'st.mdp',
        '-c', 'lig_h2o.gro',
        '-p', 'lig.top',
-       '-o', 'st.tpr'],
+       '-o', 'st.tpr',
+       '-quiet'],
        cwd=molecule.process_dir
     ).wait()
 
@@ -116,7 +119,8 @@ def task_check_sytem_charge(molecule):
             '/usr/bin/genion',
             '-s', 'st.tpr',
             '-nn', str(charge),
-            '-o', 'st.gro'],
+            '-o', 'st.gro',
+            '-quiet'],
             cwd=molecule.process_dir,
             stdin=group_option.stdout
         ).wait()
@@ -147,7 +151,8 @@ def task_check_sytem_charge(molecule):
             '/usr/bin/genion',
             '-s', 'st.tpr',
             '-np', str(abs(charge)),
-            '-o', 'st.gro'],
+            '-o', 'st.gro',
+            '-quiet'],
             cwd=molecule.process_dir,
             stdin=group_option.stdout
         ).wait()
@@ -186,7 +191,8 @@ def task_dynamic(molecule, charge):
         '-c', struct_file,
         '-p', 'lig.top',
         '-o', 'st.tpr',
-        '-maxwarn', '1'],
+        '-maxwarn', '1',
+        '-quiet'],
         cwd=molecule.process_dir,
     ).wait()
     if not os.path.exists('%s/st.tpr' % molecule.process_dir):
@@ -199,7 +205,8 @@ def task_dynamic(molecule, charge):
         '-o', 'st.trr',
         '-c', 'cg.gro',
         '-g', 'st.log',
-        '-e', 'st.edr'],
+        '-e', 'st.edr',
+        '-quiet'],
         cwd=molecule.process_dir,
     ).wait()
     if not os.path.exists('%s/cg.gro' % molecule.process_dir):
@@ -211,7 +218,8 @@ def task_dynamic(molecule, charge):
         '-f', 'cg.mdp',
         '-c', 'cg.gro',
         '-p', 'lig.top',
-        '-o', 'cg.tpr'],
+        '-o', 'cg.tpr',
+        '-quiet'],
         cwd=molecule.process_dir,
     ).wait()
     if not os.path.exists('%s/cg.tpr' % molecule.process_dir):
@@ -224,7 +232,8 @@ def task_dynamic(molecule, charge):
         '-o', 'cg.trr',
         '-c', 'gs.gro',
         '-g', 'cg.log',
-        '-e', 'cg.edr'],
+        '-e', 'cg.edr',
+        '-quiet'],
         cwd=molecule.process_dir,
     ).wait()
     if not os.path.exists('%s/gs.gro' % molecule.process_dir):
@@ -237,7 +246,8 @@ def task_dynamic(molecule, charge):
         '-c', 'cg.gro',
         '-p', 'lig.top',
         '-o', 'gs.tpr',
-        '-maxwarn', '2'],
+        '-maxwarn', '2',
+        '-quiet'],
         cwd=molecule.process_dir,
     ).wait()
     if not os.path.exists('%s/gs.tpr' % molecule.process_dir):
@@ -251,7 +261,8 @@ def task_dynamic(molecule, charge):
     #     '-o', 'gs.trr',
     #     '-c', 'pr.gro',
     #     '-g', 'gs.log',
-    #     '-e', 'gs.edr'],
+    #     '-e', 'gs.edr',
+    #     '-quiet'],
     #     cwd=molecule.process_dir,
     # ).wait()
     subprocess.Popen([
@@ -270,7 +281,8 @@ def task_dynamic(molecule, charge):
         '-c', 'pr.gro',
         '-p', 'lig.top',
         '-o', 'pr.tpr',
-        '-maxwarn', '2'],
+        '-maxwarn', '2',
+        '-quiet'],
         cwd=molecule.process_dir,
     ).wait()
     if not os.path.exists('%s/pr.tpr' % molecule.process_dir):
@@ -283,7 +295,8 @@ def task_dynamic(molecule, charge):
         '-o', 'pr.trr',
         '-c', 'md50.gro',
         '-g', 'pr.log',
-        '-e', 'pr.edr'],
+        '-e', 'pr.edr',
+        '-quiet'],
         cwd=molecule.process_dir,
     ).wait()
     if not os.path.exists('%s/md50.gro' % molecule.process_dir):
@@ -298,7 +311,8 @@ def task_dynamic(molecule, charge):
             '-c', 'md%s.gro' % k,
             '-p', 'lig.top',
             '-o', 'md%s.tpr' % k,
-            '-maxwarn', '1'],
+            '-maxwarn', '1',
+            '-quiet'],
             cwd=molecule.process_dir,
         ).wait()
         if not os.path.exists('%s/md%s.gro' % (molecule.process_dir, k)):
@@ -317,7 +331,8 @@ def task_dynamic(molecule, charge):
             '-o', 'md%s.trr' % k,
             '-c', c_arg,
             '-g', 'md%s.log' % k,
-            '-e', 'md%s.edr' % k],
+            '-e', 'md%s.edr' % k,
+            '-quiet'],
             cwd=molecule.process_dir,
         ).wait()
         if not os.path.exists('%s/%s' % (molecule.process_dir, c_arg)):
