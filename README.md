@@ -36,8 +36,16 @@ $ sudo apt-get install build-essential cmake git python python-dev python-pip ra
 
 ```
 $ pip install virtualenvwrapper
+
 $ echo "export WORKON_HOME=$HOME/.virtualenvs" >> ~/.bashrc
 $ echo "source /usr/local/bin/virtualenvwrapper.sh" >> ~/.bashrc
+
+or
+
+$ export WORKON_HOME=$HOME/.virtualenvs
+$ export PROJECT_HOME=$HOME/devel
+$ export /usr/local/bin/virtualenvwrapper.sh
+
 ```
 
 ### Dynamic requirements
