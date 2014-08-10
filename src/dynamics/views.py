@@ -16,7 +16,7 @@ def new_dynamic(request):
         if dynamic_form.is_valid():
             new_dynamic = dynamic_form.save()
             request.session['dynamic_id'] = new_dynamic.id
-            return HttpResponseRedirect('/dynamics/send-molecules')
+            return HttpResponseRedirect('/dynamics/attach-molecules')
         else:
             context = {
                 'dynamic_form': dynamic_form,
