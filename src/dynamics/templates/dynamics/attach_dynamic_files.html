@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load i18n %}
+{% load widget_tweaks %}
+
+{% block head_js %}
+<link rel="stylesheet" href="{% static "third-party/magicsuggest/magicsuggest-min.css" %}">
+{% endblock %}
+
+{% block footer_js %}
+<script src="{% static "third-party/magicsuggest/magicsuggest-min.js" %}"></script>
+<script>
+    $(function() {
+        $('#collapse-0').addClass('in');
+
+        $('.magicsuggest').magicSuggest({
+            data: ['H', 'Cl', 'Na'],
+            allowFreeEntries: false,
+            resultAsString: true,
+            maxSuggestions: 3,
+            maxSelection: {{ max_atoms_selected }}
+        });
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
+        <h1>{% trans "Attach Molecules" %}</h1>
+        <p class="lead">Consectetur asperiores quibusdam beatae nulla nostrum vitae quaerat libero ab ullam deserunt. Modi temporibus ipsa debitis cum commodi mollitia tempore.</p>
+        <form class="form-horizontal" role="form" action="" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="reference-molecule" class="col-sm-3 control-label">Reference</label>
+                <div class="col-sm-9">
+                    <select id="" name="reference-molecule" class="form-control">
+                    {% for f in molecule_formset %}
+                        <option value="{{ forloop.counter0 }}">Molecule #{{ forloop.counter }}</option>
+                    {% endfor %}
+                    </select>
+                </div>
+            </div>
+            {{ molecule_formset.management_form }}
+            {% for f in molecule_formset %}
+            <div class="form-group file-input">
+                <label for="{{ f.file.id_for_label }}" class="col-sm-3 control-label">Molecule #{{ forloop.counter}}</label>
+                <div class="col-sm-9">
+                    {{ f.file.errors }}
+                    {{ f.file }}
+                </div>
+            </div>
+            <div class="form-group atoms-input">
+                <label for="form-{{ forloop.counter0 }}-atoms" class="col-sm-3 control-label">Atoms</label>
+                <div class="col-sm-9">
+                    {{ f.atoms.errors }}
+                    <input type="text" name="form-{{ forloop.counter0 }}-atoms" class="magicsuggest">
+                </div>
+            </div>
+            {% endfor %}
+            <div class="form-group">
+                <label for="" class="col-sm-3 control-label"></label>
+                <div class="col-sm-offset-3 col-sm-9">
+                    <button type="submit" class="btn btn-default">{% trans 'Start Dynamic' %}</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-3"></div>
+</div>
+{% endblock %}

@@ -3,90 +3,58 @@
 {% load widget_tweaks %}
 
 {% block content %}
-<div class="page-header">
-    <h1>{% trans "New Molecular Dynamic" %}</h1>
-    <p class="lead">Consectetur asperiores quibusdam beatae nulla nostrum vitae quaerat libero ab ullam deserunt. Modi temporibus ipsa debitis cum commodi mollitia tempore. Praesentium accusamus ut quaerat aperiam repellat qui. Maxime iure numquam.</p>
-</div>
 <div class="row">
-    <div class="col-md-4">
-        <form class="form-horizontal" role="form" action="" method="POST" enctype="multipart/form-data">
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
+        <h1>{% trans "New Molecular Dynamic" %}</h1>
+        <p class="lead">Consectetur asperiores quibusdam beatae nulla nostrum vitae quaerat libero ab ullam deserunt. Modi temporibus ipsa debitis cum commodi mollitia tempore. Praesentium accusamus ut quaerat aperiam repellat qui. Maxime iure numquam.</p>
+        <form class="form" role="form" action="" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             {{ dynamic_form.non_field_errors }}
             {{ molecule_formset.non_field_errors }}
             <div class="form-group">
-                <label for="{{ dynamic_form.email.id_for_label }}" class="col-sm-3 control-label">{{ dynamic_form.email.label }}</label>
-                <div class="col-sm-9">
-                    {{ dynamic_form.email.errors }}
-                    {{ dynamic_form.email|add_class:"form-control" }}
-                    <span class="help-block">{% trans "This e-mail will be used to contact you when the dynamic got ready." %}</span>
-                </div>
+                <label for="{{ dynamic_form.name.id_for_label }}">{{ dynamic_form.name.label }}</label>
+                {{ dynamic_form.name.errors }}
+                {{ dynamic_form.name|add_class:"form-control" }}
+                <span class="help-block">Ipsum sit vitae voluptatem esse quasi, consequatur.</span>
             </div>
             <div class="form-group">
-                <label for="{{ dynamic_form.box_size.id_for_label }}" class="col-sm-3 control-label">{{ dynamic_form.box_size.label }}</label>
-                <div class="col-sm-9">
-                    {{ dynamic_form.box_size.errors }}
-                    {{ dynamic_form.box_size|add_class:"form-control" }}
-                </div>
-            </div>
-            {{ molecule_formset.management_form }}
-            {% for f in molecule_formset %}
-            <div class="form-group">
-                <label for="{{ f.file.id_for_label }}" class="col-sm-3 control-label">{{ f.file.label }}</label>
-                <div class="col-sm-9">
-                    {{ f.file }}
-                </div>
-            </div>
-            {% endfor %}
-            <div class="form-group">
-                <label for="add-one-more-file" class="col-sm-3 control-label"></label>
-                <div class="col-sm-9">
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-default btn-sm" id="more-files">
-                            <span class="glyphicon glyphicon-plus"></span>
-                            {% trans 'More files' %}
-                        </button>
-                        <button type="button" class="btn btn-default btn-sm" id="less-files">
-                            <span class="glyphicon glyphicon-minus"></span>
-                            {% trans 'Less files' %}
-                        </button>
-                    </div>
-                </div>
+                <label for="{{ dynamic_form.email.id_for_label }}">{{ dynamic_form.email.label }}</label>
+                {{ dynamic_form.email.errors }}
+                {{ dynamic_form.email|add_class:"form-control" }}
+                <span class="help-block">Adipisicing cum quisquam qui laboriosam.</span>
             </div>
             <div class="form-group">
-                <div class="col-sm-offset-3 col-sm-9">
-                    <button type="submit" class="btn btn-default">{% trans 'Start Dynamic' %}</button>
+                <label for="{{ dynamic_form.box_size.id_for_label }}">{{ dynamic_form.box_size.label }}</label>
+                {{ dynamic_form.box_size.errors }}
+                {{ dynamic_form.box_size|add_class:"form-control" }}
+                <span class="help-block">Elit veritatis consectetur labore lorem labore debitis minus</span>
+            </div>
+            <div class="form-group">
+                <label for="{{ dynamic_form.number_of_molecules.id_for_label }}">{{ dynamic_form.number_of_molecules.label }}</label>
+                {{ dynamic_form.number_of_molecules.errors }}
+                {{ dynamic_form.number_of_molecules|add_class:"form-control" }}
+                <span class="help-block">Amet possimus nihil voluptates consectetur voluptate. Ipsam delectus natus maxime fugit rem!</span>
+            </div>
+            <div class="form-group">
+                <label for="{{ dynamic_form.number_of_atoms_for_alignment.id_for_label }}">{{ dynamic_form.number_of_atoms_for_alignment.label }}</label>
+                {{ dynamic_form.number_of_atoms_for_alignment.errors }}
+                {{ dynamic_form.number_of_atoms_for_alignment|add_class:"form-control" }}
+                <span class="help-block">Lorem maxime quia dolore doloribus dolor corporis quas. Quis necessitatibus possimus aliquid assumenda velit.</span>
+            </div>
+            <div class="form-group">
+                <label for="{{ dynamic_form.atoms_for_alignment.id_for_label }}">{{ dynamic_form.atoms_for_alignment.label }}</label>
+                {{ dynamic_form.atoms_for_alignment.errors }}
+                {{ dynamic_form.atoms_for_alignment|add_class:"form-control" }}
+            </div>
+            <div class="form-group">
+                <div class="btn-group">
+                    <button type="reset" class="btn btn-default">{% trans 'Reset' %}</button>
+                    <button type="submit" class="btn btn-primary">{% trans 'Next step' %}</button>
                 </div>
             </div>
         </form>
     </div>
-    <div class="col-md-8"></div>
+    <div class="col-md-3"></div>
 </div>
-{% endblock %}
-
-{% block footer_js %}
-<script>
-    $(document).ready(function() {
-        var inputs = 0;
-
-        $('#more-files').click(function() {
-            console.log('click');
-            $('#id_form-' + inputs + '-file')
-                .clone()
-                .attr('id', 'id_form-' + (inputs + 1) + '-file')
-                .attr('name', 'form-' + (inputs + 1) + '-file')
-                .val('')
-                .insertAfter('#id_form-' + inputs + '-file');
-            inputs = inputs + 1;
-            $('#id_form-TOTAL_FORMS').val(inputs + 1);
-        });
-
-        $('#less-files').click(function() {
-            if(inputs > 0) {
-                $('#id_form-' + inputs + '-file').remove();
-                inputs = inputs - 1;
-                $('#id_form-TOTAL_FORMS').val(inputs + 1);
-            }
-        });
-    });
-</script>
 {% endblock %}

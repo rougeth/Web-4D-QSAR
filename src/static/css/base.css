@@ -10,3 +10,7 @@ body > .container {
 .web-lqta-qsar {
     font-weight: 300;
 }
+
+.atom-input-margin {
+    margin-bottom: 100px;
+}

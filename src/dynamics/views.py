@@ -1,49 +1,96 @@
-from django.shortcuts import render
-from django.http import HttpResponse
+from django.shortcuts import render, redirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.forms.formsets import formset_factory
+from django.core.urlresolvers import reverse
 
-from dynamics.models import Molecule
+from dynamics.models import Dynamic, Molecule
 from dynamics.forms import DynamicForm, MoleculeForm
 from dynamics import tasks
 
 
 def new_dynamic(request):
 
-    molecule_formset = formset_factory(MoleculeForm)
-
     if request.method == 'POST':
         dynamic_form = DynamicForm(request.POST)
-        molecule_formset = molecule_formset(request.POST, request.FILES)
 
-        if dynamic_form.is_valid() and molecule_formset.is_valid():
-
+        if dynamic_form.is_valid():
             new_dynamic = dynamic_form.save()
-
-            for i, f in enumerate(molecule_formset):
-                new_molecule = Molecule(
-                    dynamic=new_dynamic,
-                    file=f.cleaned_data['file']
-                ).save()
-
-            # Starts the task to process the new dynamic
-            tasks.molecular_dynamics.delay(new_dynamic)
-
-            context = {
-                    'email': new_dynamic.email,
-            }
-
-            return render(request, 'dynamics/dynamic_started.html', context)
-
+            request.session['dynamic_id'] = new_dynamic.id
+            return HttpResponseRedirect('/dynamics/send-molecules')
         else:
             context = {
                 'dynamic_form': dynamic_form,
-                'molecule_formset': molecule_formset,
             }
             return render(request, 'dynamics/new_dynamic.html', context)
 
-
     context = {
         'dynamic_form': DynamicForm(),
-        'molecule_formset': molecule_formset,
     }
     return render(request, 'dynamics/new_dynamic.html', context)
+
+
+def attach_dynamic_files(request):
+
+    dynamic_id = request.session.get('dynamic_id')
+
+    if not dynamic_id:
+        return HttpResponseRedirect('/dynamics/new')
+
+    dynamic = Dynamic.objects.filter(id=dynamic_id)[0]
+    molecule_formset = formset_factory(
+        MoleculeForm,
+        extra=dynamic.number_of_molecules
+    )
+
+    if request.method == 'POST':
+        molecule_formset = molecule_formset(request.POST, request.FILES)
+
+        if molecule_formset.is_valid() and not dynamic.configured:
+
+            reference = int(request.POST.get('reference-molecule'))
+
+            for i, f in enumerate(molecule_formset):
+
+                atoms = request.POST.getlist('form-%s-atoms[]' % i)
+
+                if reference == i:
+                    ref = True
+                else:
+                    ref = False
+
+                new_molecule = Molecule(
+                    dynamic=dynamic,
+                    file=f.cleaned_data['file'],
+                    atoms=', '.join(atoms),
+                    reference=ref
+                ).save()
+
+            dynamic.configured = True
+            dynamic.save()
+            request.session['dynamic_id'] = None
+
+            # Starts the task to process the new dynamic
+            tasks.molecular_dynamics.delay(dynamic)
+
+            context = {
+                    'name': dynamic.name,
+                    'email': dynamic.email,
+            }
+
+            return render(request, 'dynamics/dynamic_started.html', context)
+        else:
+            context = {
+                'molecule_formset': molecule_formset,
+                'max_atoms_selected': dynamic.number_of_atoms_for_alignment
+            }
+            return render(request, 'dynamics/attach_dynamic_files.html',
+                context)
+
+
+    else:
+        context = {
+            'molecule_formset': molecule_formset,
+            'max_atoms_selected': dynamic.number_of_atoms_for_alignment
+        }
+
+        return render(request, 'dynamics/attach_dynamic_files.html', context)

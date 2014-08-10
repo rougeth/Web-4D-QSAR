@@ -4,6 +4,6 @@
 {% block content %}
 <div class="page-header">
     <h1>{% trans "Dynamic request sent" %}</h1>
-    <p class="lead">Hi! We received your dynamic request and it is already in the queue for execution. Once it get finished we will send an email with the results to this address: <i>{{ email }}</i>.</p>
+    <p class="lead">Hi {{ name }}! We received your dynamic request and it is already in the queue for execution. Once it get finished we will send an email with the results to this address: <i>{{ email }}</i>.</p>
 </div>
 {% endblock %}
