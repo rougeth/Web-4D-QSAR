@@ -341,6 +341,94 @@ def task_dynamic(molecule, charge):
             return False
 
 
+def task_alignment(dynamic):
+    for molecule in Dynamic.objects.filter(dynamic=dynamic):
+
+        atoms = molecule.atoms.replate(',', ' ')
+        os.system('"{}" >> {}/PAC_atoms.ndx'.format(
+            atoms,
+            molecule.process_dir,
+        ))
+
+        if molecule.reference:
+            align_not_reference(molecule)
+        else:
+            align_reference(molecule)
+
+
+def align_not_reference(molecule):
+
+    pass
+
+
+
+def align_reference(molecule):
+
+    pac_dir = molecules.process_dir + '/pconfs'
+    os.makedirs(pac_dir)
+
+    subprocess.Popen([
+        '/usr/bin/trjconv',
+        '-b', '20',
+        '-f', 'md300.trr',
+        '-fit', 'rot+trans',
+        '-sep', pac_dir + '/prot_ref.pdb',
+        '-nice', '0'],
+        cwd=molecule.process_dir,
+    ).wait()
+
+    frames = len([n for n in os.listdir(pac_dir) if os.path.isfile(n)])
+
+    for f in range(1, frames + 1):
+        subprocess.Popen([
+            '/usr/bin/g_confrms',
+            '-f1', pac_dir + '/prot_ref0.pdb',
+            '-n1', molecule.process_dir + '/PAC_atoms.ndx',
+            '-f2', pac_dir + '/prot_ref%s.pdb' % f,
+            '-n2', molecule.process_dir + '/PAC_atoms.ndx',
+            '-o', pac_dir + '/prot_fitted_%s.pdb' % f,
+            '-one',
+            '-nice', '0'],
+            cwd=molecule.process_dir,
+        ).wait()
+
+    for f in frames:
+        os.system('awk \'match($0," A ") == 0 {print $0}\' {} > {}'.format(
+            pac_dir + '/prot_fitted_%s.pdb' % f,
+            pac_dir + '/sem_prot_%s.pdb' % f
+        ))
+
+    for f in frames:
+        os.system('awk \'match($0," SOL ") == 0 {print $0}\' {} > {}'.format(
+            pac_dir + '/sem_prot_%s.pdb' % f,
+            pac_dir + '/sem_SOL_%s.pdb' % f
+        ))
+
+    for f in frames:
+        os.system('awk \'match($0," Cl ") == 0 {print $0}\' {} > {}'.format(
+            pac_dir + '/sem_SOL_%s.pdb' % f,
+            pac_dir + '/sem_NA_%s.pdb' % f
+        ))
+
+    for f in frames:
+        os.system('awk \'match($0," FAD ") == 0 {print $0}\' {} > {}'.format(
+            pac_dir + '/sem_NA_%s.pdb' % f,
+            pac_dir + '/sem_FAD_%s.pdb' % f
+        ))
+
+    os.system('cat {}/sem_FAD_*.pdb > {}/PAC_ref.pdf'.format(
+        pac_dir,
+        molecule.process_dir
+    ))
+
+    os.system('cat {}/gro_* > {}/PAC_ref.gro'.format(
+        pac_dir,
+        molecule.process_dir
+    ))
+
+    os.system('rm %s/sem*' % pac_dir)
+    os.system('rm %s/*.gro' % pac_dir)
+
 @task()
 def molecular_dynamics(dynamic):
 
@@ -369,6 +457,7 @@ def molecular_dynamics(dynamic):
         logger.info('Start molecular dynamic.')
         task_dynamic(molecule, charge)
 
-        logger.info('Dynamic finished.')
+    logger.info('Start alignment.')
+    task_alignment(dynamic)
 
     return True
