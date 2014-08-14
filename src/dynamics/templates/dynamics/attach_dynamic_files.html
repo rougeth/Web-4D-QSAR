@@ -20,7 +20,9 @@
             var input = $('#id_form-' + i + '-atoms').val();
             input = input.replace(/ /g,'');
 
-            if(!numeric_atoms_input_re.test(input)) {
+            if(!numeric_atoms_input_re.test(input) ||
+                input.split(',').length != {{ max_atoms_selected }}) {
+
                 $('#id_form-' + i + '-atoms').parent().parent().addClass('has-error');
                 $('#id_form-' + i + '-atoms').focus();
                 event.preventDefault();
