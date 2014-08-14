@@ -10,16 +10,24 @@
 {% block footer_js %}
 <script src="{% static "third-party/magicsuggest/magicsuggest-min.js" %}"></script>
 <script>
-    $(function() {
-        $('#collapse-0').addClass('in');
+    $('#molecules-form').submit(function(event) {
 
-        $('.magicsuggest').magicSuggest({
-            data: ['H', 'Cl', 'Na'],
-            allowFreeEntries: false,
-            resultAsString: true,
-            maxSuggestions: 3,
-            maxSelection: {{ max_atoms_selected }}
-        });
+        var numeric_atoms_input_re = /^(\d+)(,\d+)*$/;
+        var number_of_inputs = $('#id_form-TOTAL_FORMS').val();
+        var i;
+
+        for(i=0; i<number_of_inputs; i++) {
+            var input = $('#id_form-' + i + '-atoms').val();
+            input = input.replace(/ /g,'');
+
+            if(!numeric_atoms_input_re.test(input)) {
+                $('#id_form-' + i + '-atoms').parent().parent().addClass('has-error');
+                $('#id_form-' + i + '-atoms').focus();
+                event.preventDefault();
+                return false;
+            }
+        }
+        this.submit();
     });
 </script>
 {% endblock %}
@@ -30,7 +38,7 @@
     <div class="col-md-6">
         <h1>{% trans "Attach Molecules" %}</h1>
         <p class="lead">Consectetur asperiores quibusdam beatae nulla nostrum vitae quaerat libero ab ullam deserunt. Modi temporibus ipsa debitis cum commodi mollitia tempore.</p>
-        <form class="form-horizontal" role="form" action="" method="POST" enctype="multipart/form-data">
+        <form id="molecules-form" class="form-horizontal" role="form" action="" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="form-group">
                 <label for="reference-molecule" class="col-sm-3 control-label">Reference</label>
@@ -40,22 +48,29 @@
                         <option value="{{ forloop.counter0 }}">Molecule #{{ forloop.counter }}</option>
                     {% endfor %}
                     </select>
+                    <p class="help-block">Consectetur quis molestias at vitae nemo.</p>
                 </div>
             </div>
             {{ molecule_formset.management_form }}
             {% for f in molecule_formset %}
+            {% if f.file.errors %}
+            <div class="form-group file-input has-error">
+            {% else %}
             <div class="form-group file-input">
+            {% endif %}
                 <label for="{{ f.file.id_for_label }}" class="col-sm-3 control-label">Molecule #{{ forloop.counter}}</label>
                 <div class="col-sm-9">
                     {{ f.file.errors }}
                     {{ f.file }}
+                    <p class="help-block">Sit commodi sit sunt nam quidem rerum ea veritatis.</p>
                 </div>
             </div>
             <div class="form-group atoms-input">
-                <label for="form-{{ forloop.counter0 }}-atoms" class="col-sm-3 control-label">Atoms</label>
+                <label for="{{ f.atoms.id_for_label }}" class="col-sm-3 control-label">Atoms</label>
                 <div class="col-sm-9">
                     {{ f.atoms.errors }}
-                    <input type="text" name="form-{{ forloop.counter0 }}-atoms" class="magicsuggest">
+                    {{ f.atoms|add_class:'numeric-atom' }}
+                    <p class="help-block">Adipisicing maiores a alias voluptatem deserunt.</p>
                 </div>
             </div>
             {% endfor %}
