@@ -9,6 +9,9 @@ from dynamics import tasks
 
 
 def new_dynamic(request):
+    """ Step 1
+        Set basic configurations.
+    """
 
     if request.method == 'POST':
         dynamic_form = DynamicForm(request.POST)
@@ -29,7 +32,39 @@ def new_dynamic(request):
     return render(request, 'dynamics/new_dynamic.html', context)
 
 
-def attach_dynamic_files_post(request, dynamic):
+def attach_molecules(request):
+    """ Step 2
+        Send molecules files and configure the atoms that should be used to
+        alignment.
+    """
+
+    dynamic_id = request.session.get('dynamic_id')
+    if not dynamic_id:
+        request.session['dynamic_id'] = None
+        return HttpResponseRedirect('/dynamics/new')
+
+    dynamic = Dynamic.objects.filter(id=dynamic_id)[0]
+    if dynamic.configured:
+        request.session['dynamic_id'] = None
+        return HttpResponseRedirect('/dynamics/new')
+
+    molecule_formset = formset_factory(
+        MoleculeForm,
+        extra=dynamic.number_of_molecules
+    )
+
+    if request.method == 'GET':
+        context = {
+            'molecule_formset': molecule_formset,
+            'max_atoms_selected': dynamic.number_of_atoms_for_alignment
+        }
+
+        return render(request, 'dynamics/attach_dynamic_files.html', context)
+    else:
+        return attach_molecules_post(request, dynamic)
+
+
+def attach_molecules_post(request, dynamic):
 
     molecule_formset = formset_factory(
         MoleculeForm,
@@ -73,32 +108,3 @@ def attach_dynamic_files_post(request, dynamic):
                 'email': dynamic.email,
         }
         return render(request, 'dynamics/dynamic_started.html', context)
-
-
-def attach_dynamic_files(request):
-
-    dynamic_id = request.session.get('dynamic_id')
-    if not dynamic_id:
-        request.session['dynamic_id'] = None
-        return HttpResponseRedirect('/dynamics/new')
-
-    dynamic = Dynamic.objects.filter(id=dynamic_id)[0]
-    if dynamic.configured:
-        request.session['dynamic_id'] = None
-        return HttpResponseRedirect('/dynamics/new')
-
-    molecule_formset = formset_factory(
-        MoleculeForm,
-        extra=dynamic.number_of_molecules
-    )
-
-    if request.method == 'GET':
-        context = {
-            'molecule_formset': molecule_formset,
-            'max_atoms_selected': dynamic.number_of_atoms_for_alignment
-        }
-
-        return render(request, 'dynamics/attach_dynamic_files.html', context)
-    else:
-        return attach_dynamic_files_post(request, dynamic)
-
