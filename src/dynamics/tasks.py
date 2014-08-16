@@ -341,45 +341,126 @@ def task_dynamic(molecule, charge):
             return False
 
 
-def task_alignment(dynamic):
-    for molecule in Dynamic.objects.filter(dynamic=dynamic):
+def task_alignment(molecule):
 
-        atoms = molecule.atoms.replate(',', ' ')
-        os.system('"{}" >> {}/PAC_atoms.ndx'.format(
-            atoms,
-            molecule.process_dir,
-        ))
+    atoms = molecule.molecule.atoms.replace(',', ' ')
+    os.system('echo "{}" >> {}/PAC_atoms.ndx'.format(
+        atoms,
+        molecule.process_dir,
+    ))
 
-        if molecule.reference:
-            align_not_reference(molecule)
-        else:
-            align_reference(molecule)
-
-
-def align_not_reference(molecule):
-
-    pass
+    if molecule.molecule.reference:
+        align_reference(molecule)
+    else:
+        align_not_reference(molecule)
 
 
+def align_not_reference(molecule, ref_dir):
+    print('align_not_reference')
 
-def align_reference(molecule):
+    atoms = molecule.molecule.atoms.replace(',', ' ')
+    os.system('echo "{}" >> {}/PAC_atoms.ndx'.format(
+        atoms,
+        molecule.process_dir,
+    ))
 
-    pac_dir = molecules.process_dir + '/pconfs'
+    pac_dir = molecule.process_dir + '/pconfs'
+    if os.path.exists(pac_dir):
+        shutil.rmtree(pac_dir)
     os.makedirs(pac_dir)
 
     subprocess.Popen([
         '/usr/bin/trjconv',
         '-b', '20',
         '-f', 'md300.trr',
+        '-s', 'md300.tpr',
         '-fit', 'rot+trans',
-        '-sep', pac_dir + '/prot_ref.pdb',
-        '-nice', '0'],
+        '-sep', 
+        '-o', pac_dir + '/alinha.pdb',
+        '-nice', '0',
+        '-quiet'],
         cwd=molecule.process_dir,
     ).wait()
 
-    frames = len([n for n in os.listdir(pac_dir) if os.path.isfile(n)])
+    frames = len(os.listdir(pac_dir))
+    frames = range(frames);
 
-    for f in range(1, frames + 1):
+    for f in frames:
+        subprocess.Popen([
+            '/usr/bin/g_confrms',
+            '-f1', ref_dir + '/pconfs/prot_ref0.pdb',
+            '-n1', ref_dir + '/PAC_atoms.ndx',
+            '-f2', ref_dir + '/pconfs/prot_ref%s.pdb' % f,
+            '-n2', molecule.process_dir + '/PAC_atoms.ndx',
+            '-o', pac_dir + '/prot_fitted_%s.pdb' % f,
+            '-one',
+            '-nice', '0',
+            '-quiet'],
+            cwd=molecule.process_dir,
+        ).wait()
+
+    for f in frames:
+        os.system('awk \'match($0," SOL ") == 0 {{print $0}}\' {} > {}'.format(
+            pac_dir + '/f_ajus_%s.pdb' % f,
+            pac_dir + '/sem_SOL_%s.pdb' % f
+        ))
+
+    os.system('cat {}/sem_SOL_*.pdb > {}/PAC_ref.pdb'.format(
+        pac_dir,
+        molecule.process_dir
+    ))
+
+    for f in frames:
+        subprocess.Popen([
+            '/usr/bin/editconf',
+            '-f', pac_dir + '/sem_SOL_%s.pdb' % f,
+            '-o', pac_dir + '/gro_%s.gro' % f,
+            '-quiet'],
+            cwd=molecule.process_dir,
+        ).wait()
+
+    os.system('cat {}/gro_* > {}/PAC_done.gro'.format(
+        pac_dir,
+        molecule.process_dir
+    ))
+
+    os.system('rm -r %s' % pac_dir)
+    
+    return True
+
+
+def align_reference(molecule):
+
+    print('align_reference')
+
+    atoms = molecule.molecule.atoms.replace(',', ' ')
+    os.system('echo "{}" >> {}/PAC_atoms.ndx'.format(
+        atoms,
+        molecule.process_dir,
+    ))
+
+    pac_dir = molecule.process_dir + '/pconfs'
+    if os.path.exists(pac_dir):
+        shutil.rmtree(pac_dir)
+    os.makedirs(pac_dir)
+
+    subprocess.Popen([
+        '/usr/bin/trjconv',
+        '-b', '20',
+        '-f', 'md300.trr',
+        '-s', 'md300.tpr',
+        '-fit', 'rot+trans',
+        '-sep', 
+        '-o', pac_dir + '/prot_ref.pdb',
+        '-nice', '0',
+        '-quiet'],
+        cwd=molecule.process_dir,
+    ).wait()
+
+    frames = len(os.listdir(pac_dir))
+    frames = range(frames);
+
+    for f in frames:
         subprocess.Popen([
             '/usr/bin/g_confrms',
             '-f1', pac_dir + '/prot_ref0.pdb',
@@ -388,33 +469,43 @@ def align_reference(molecule):
             '-n2', molecule.process_dir + '/PAC_atoms.ndx',
             '-o', pac_dir + '/prot_fitted_%s.pdb' % f,
             '-one',
-            '-nice', '0'],
+            '-nice', '0',
+            '-quiet'],
             cwd=molecule.process_dir,
         ).wait()
 
     for f in frames:
-        os.system('awk \'match($0," A ") == 0 {print $0}\' {} > {}'.format(
+        os.system('awk \'match($0," A ") == 0 {{print $0}}\' {} > {}'.format(
             pac_dir + '/prot_fitted_%s.pdb' % f,
             pac_dir + '/sem_prot_%s.pdb' % f
         ))
 
     for f in frames:
-        os.system('awk \'match($0," SOL ") == 0 {print $0}\' {} > {}'.format(
+        os.system('awk \'match($0," SOL ") == 0 {{print $0}}\' {} > {}'.format(
             pac_dir + '/sem_prot_%s.pdb' % f,
             pac_dir + '/sem_SOL_%s.pdb' % f
         ))
 
     for f in frames:
-        os.system('awk \'match($0," Cl ") == 0 {print $0}\' {} > {}'.format(
+        os.system('awk \'match($0," Cl ") == 0 {{print $0}}\' {} > {}'.format(
             pac_dir + '/sem_SOL_%s.pdb' % f,
             pac_dir + '/sem_NA_%s.pdb' % f
         ))
 
     for f in frames:
-        os.system('awk \'match($0," FAD ") == 0 {print $0}\' {} > {}'.format(
+        os.system('awk \'match($0," FAD ") == 0 {{print $0}}\' {} > {}'.format(
             pac_dir + '/sem_NA_%s.pdb' % f,
             pac_dir + '/sem_FAD_%s.pdb' % f
         ))
+
+    for f in frames:
+        subprocess.Popen([
+            '/usr/bin/editconf',
+            '-f', pac_dir + '/sem_FAD_%s.pdb' % f,
+            '-o', pac_dir + '/gro_%s.gro' % f,
+            '-quiet'],
+            cwd=molecule.process_dir,
+        ).wait()
 
     os.system('cat {}/sem_FAD_*.pdb > {}/PAC_ref.pdf'.format(
         pac_dir,
@@ -428,6 +519,9 @@ def align_reference(molecule):
 
     os.system('rm %s/sem*' % pac_dir)
     os.system('rm %s/*.gro' % pac_dir)
+
+    return True
+
 
 @task()
 def molecular_dynamics(dynamic):
@@ -458,6 +552,13 @@ def molecular_dynamics(dynamic):
         task_dynamic(molecule, charge)
 
     logger.info('Start alignment.')
-    task_alignment(dynamic)
+    ref_molecule = [m for m in  molecules if m.molecule.reference][0]
+    not_ref_molecules = [m for m in molecules if not m.molecule.reference] 
+
+    align_reference(ref_molecule)
+    ref_dir = ref_molecule.process_dir
+    
+    for molecule in not_ref_molecules:
+        align_not_reference(molecule, ref_dir)
 
     return True
