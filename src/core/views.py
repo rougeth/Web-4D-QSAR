@@ -10,7 +10,7 @@ def how_it_works(request):
     return render(request, 'core/how_it_works.html')
 
 def docs(request):
-    return redirect('http://colab.readthedocs.org/en/latest/')
+    return redirect('http://lqta.iqm.unicamp.br/portugues/siteLQTA/LQTAgrid.html')
 
 def license(request):
     return render(request, 'core/license.html')

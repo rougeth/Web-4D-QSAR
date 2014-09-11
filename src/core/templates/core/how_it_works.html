@@ -4,13 +4,19 @@
 
 {% block content %}
 <div class="page-header">
-    <h1>{% trans "Como WQSAR funciona" %}</h1>
-    <p class="lead">Se você deseja saber mais sobre como esse projeto foi desenvolvido, leia a <a href="{% url 'core:docs' %}">documentação</a>.</p>
+    <h1>{% trans "How Web-4D-QSAR works" %}</h1>
 </div>
 <p>
-Lorem ea id commodi ab ullam autem! Saepe quas corrupti temporibus praesentium eius. Animi dolore dolore voluptatem a ad! Libero magnam sapiente incidunt explicabo aperiam excepturi vitae dolorum nostrum tempora?
+The creation of pharmacos with the aid of computing is a research area of great importance in chemistry and related fields.</p>
+<p>
+The toolkit is available for this purpose, among others, in programs for generating descriptors and construction and validation of mathematical models in QSAR (English, Quantitative Structure-Activity Relationship). Aiming to make this more accessible to the scientific community, new methodologies and programs were developed <a href="{% url 'core:docs' %}">(MARTINS, 2013)</a> study. Including a new 4D QSAR methodology, known as LQTA-QSAR, whose goal is to generate spatial descriptors taking into account the profiles of conformational sampling of molecules under study obtained from molecular dynamics simulations.
 </p>
-<p>Dolor earum est architecto enim aliquam quas voluptates. Ex facilis labore veniam maiores dolorum corporis cumque omnis nam praesentium quo pariatur repellendus inventore molestias cumque qui id vel. Ipsa sequi?</p>
-<img src="{% static 'imgs/image.png' %}" alt="">
-<p>Adipisicing nihil explicabo quae soluta expedita ullam. Expedita corporis culpa aperiam doloribus placeat officiis cupiditate tenetur. Ducimus illo exercitationem nostrum ipsam pariatur error. Impedit minus perspiciatis tempora aut ullam fugit?</p>
+<img src="{% static 'imgs/LQTAGridPy.png' %}" alt="">
+<p>Based on these methodologies developed, a Web platform was created to provide an integrated environment for performing molecular dynamics and generation of system descriptors.
+</p>
 {% endblock %}
+
+
+
+
+
