@@ -7,40 +7,46 @@
     <div class="col-md-3"></div>
     <div class="col-md-6">
         <h1>{% trans "New Molecular Dynamic" %}</h1>
-        <p class="lead">Consectetur asperiores quibusdam beatae nulla nostrum vitae quaerat libero ab ullam deserunt. Modi temporibus ipsa debitis cum commodi mollitia tempore. Praesentium accusamus ut quaerat aperiam repellat qui. Maxime iure numquam.</p>
+        <p class="lead">A molecular dynamics is a computer simulation of physical movements of atoms and molecules in the context of simulation.</p>
         <form class="form" role="form" action="" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             {{ dynamic_form.non_field_errors }}
             {{ molecule_formset.non_field_errors }}
+            <div class="alert alert-info">
+                <p class="lead">User data</p>
+            </div>
             <div class="form-group">
                 <label for="{{ dynamic_form.name.id_for_label }}">{{ dynamic_form.name.label }}</label>
                 {{ dynamic_form.name.errors }}
                 {{ dynamic_form.name|add_class:"form-control" }}
-                <span class="help-block">Ipsum sit vitae voluptatem esse quasi, consequatur.</span>
+                <span class="help-block">Enter your name, please.</span>
             </div>
             <div class="form-group">
                 <label for="{{ dynamic_form.email.id_for_label }}">{{ dynamic_form.email.label }}</label>
                 {{ dynamic_form.email.errors }}
                 {{ dynamic_form.email|add_class:"form-control" }}
-                <span class="help-block">Adipisicing cum quisquam qui laboriosam.</span>
+                <span class="help-block">Please enter your email address.</span>
+            </div>
+            <div class="alert alert-info">
+            <p class="lead">Dynamics data</p>
             </div>
             <div class="form-group">
                 <label for="{{ dynamic_form.box_size.id_for_label }}">{{ dynamic_form.box_size.label }}</label>
                 {{ dynamic_form.box_size.errors }}
                 {{ dynamic_form.box_size|add_class:"form-control" }}
-                <span class="help-block">Elit veritatis consectetur labore lorem labore debitis minus</span>
+                <span class="help-block">Inform the dimension box.</span>
             </div>
             <div class="form-group">
                 <label for="{{ dynamic_form.number_of_molecules.id_for_label }}">{{ dynamic_form.number_of_molecules.label }}</label>
                 {{ dynamic_form.number_of_molecules.errors }}
                 {{ dynamic_form.number_of_molecules|add_class:"form-control" }}
-                <span class="help-block">Amet possimus nihil voluptates consectetur voluptate. Ipsam delectus natus maxime fugit rem!</span>
+                <span class="help-block">Enter the total molecules.</span>
             </div>
             <div class="form-group">
                 <label for="{{ dynamic_form.number_of_atoms_for_alignment.id_for_label }}">{{ dynamic_form.number_of_atoms_for_alignment.label }}</label>
                 {{ dynamic_form.number_of_atoms_for_alignment.errors }}
                 {{ dynamic_form.number_of_atoms_for_alignment|add_class:"form-control" }}
-                <span class="help-block">Lorem maxime quia dolore doloribus dolor corporis quas. Quis necessitatibus possimus aliquid assumenda velit.</span>
+                <span class="help-block">Enter the number of atoms for alignment.</span>
             </div>
             <div class="form-group">
                 <label for="{{ dynamic_form.atoms_for_alignment.id_for_label }}">{{ dynamic_form.atoms_for_alignment.label }}</label>
