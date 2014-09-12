@@ -43,6 +43,7 @@ INSTALLED_APPS = (
     # Main apps
     'core',
     'dynamics',
+    'matrix_generate',
 )
 
 MIDDLEWARE_CLASSES = (
