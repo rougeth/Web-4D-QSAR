@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
+        <h1>{% trans "Generate Matrix Descriptors" %}</h1>
+        <form class="form" role="form" action="" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ matrix_form.non_field_errors }}
+            {{ molecule_formset.non_field_errors }}
+            <div class="alert alert-info">
+                <p class="lead">User data</p>
+            </div>
+            <div class="form-group">
+                <label for="{{ matrix_form.name.id_for_label }}">{{ matrix_form.name.label }}</label>
+                {{ matrix_form.name.errors }}
+                {{ matrix_form.name|add_class:"form-control" }}
+                <span class="help-block">Enter your name, please.</span>
+            </div>
+            <div class="form-group">
+                <label for="{{ matrix_form.email.id_for_label }}">{{ matrix_form.email.label }}</label>
+                {{ matrix_form.email.errors }}
+                {{ matrix_form.email|add_class:"form-control" }}
+                <span class="help-block">Please enter your email address.</span>
+            </div>
+            <div class="alert alert-info">
+            <p class="lead">Matrix data</p>
+            </div>
+            <div class="form-group"> 
+                <label for="{{ matrix_form.number_of_molecules.id_for_label }}">{{ matrix_form.number_of_molecules.label }}</label>
+                {{ matrix_form.number_of_molecules.errors }}
+                {{ matrix_form.number_of_molecules|add_class:"form-control" }}
+                <span class="help-block">Inform the dimension box.</span>
+            </div>
+            <div class="form-group"> 
+                <label for="{{ matrix_form.box_dimension_x.id_for_label }}">{{ matrix_form.box_dimension_x.label }}</label>
+                {{ matrix_form.box_dimension_x.errors }}
+                {{ matrix_form.box_dimension_x|add_class:"form-control" }}
+                <span class="help-block">Inform the dimension box.</span>
+            </div>
+            <div class="form-group">
+                <label for="{{ matrix_form.box_dimension_y.id_for_label }}">{{ matrix_form.box_dimension_y.label }}</label>
+                {{ matrix_form.box_dimension_y.errors }}
+                {{ matrix_form.box_dimension_y|add_class:"form-control" }}
+                <span class="help-block">Inform the dimension box.</span>
+            </div>
+            <div class="form-group">
+                <label for="{{ matrix_form.box_dimension_z.id_for_label }}">{{ matrix_form.box_dimension_z.label }}</label>
+                {{ matrix_form.box_dimension_z.errors }}
+                {{ matrix_form.box_dimension_z|add_class:"form-control" }}
+                <span class="help-block">Inform the dimension box.</span>
+            </div>
+            <div class="form-group">
+                <label for="{{ matrix_form.box_coordinate_x.id_for_label }}">{{ matrix_form.box_coordinate_x.label }}</label>
+                {{ matrix_form.box_coordinate_x.errors }}
+                {{ matrix_form.box_coordinate_x|add_class:"form-control" }}
+                <span class="help-block">Enter the total molecules.</span>
+            </div>
+            <div class="form-group">
+                <label for="{{ matrix_form.box_coordinate_y.id_for_label }}">{{ matrix_form.box_coordinate_y.label }}</label>
+                {{ matrix_form.box_coordinate_y.errors }}
+                {{ matrix_form.box_coordinate_y|add_class:"form-control" }}
+                <span class="help-block">Enter the number of atoms for alignment.</span>
+            </div>
+            <div class="form-group">
+                <label for="{{ matrix_form.box_coordinate_z.id_for_label }}">{{ matrix_form.box_coordinate_z.label }}</label>
+                {{ matrix_form.box_coordinate_z.errors }}
+                {{ matrix_form.box_coordinate_z|add_class:"form-control" }}
+            </div>
+            <div class="alert alert-info">
+                <p class="lead">Atoms to proves</p>
+            </div>
+            <div class="form-group">
+                <label for="{{ matrix_form.coo.id_for_label }}">{{ matrix_form.coo.label }}</label>
+                {{ matrix_form.coo.errors }}
+                {{ matrix_form.coo|add_class:"form-control" }}
+
+                <label for="{{ matrix_form.nh3.id_for_label }}">{{ matrix_form.nh3.label }}</label>
+                {{ matrix_form.nh3.errors }}
+                {{ matrix_form.nh3|add_class:"form-control" }}
+
+                <label for="{{ matrix_form.ch3.id_for_label }}">{{ matrix_form.ch3.label }}</label>
+                {{ matrix_form.ch3.errors }}
+                {{ matrix_form.ch3|add_class:"form-control" }}
+
+                <label for="{{ matrix_form.arc.id_for_label }}">{{ matrix_form.arc.label }}</label>
+                {{ matrix_form.arc.errors }}
+                {{ matrix_form.arc|add_class:"form-control" }}
+
+                <label for="{{ matrix_form.oh.id_for_label }}">{{ matrix_form.oh.label }}</label>
+                {{ matrix_form.oh.errors }}
+                {{ matrix_form.oh|add_class:"form-control" }}
+
+                <label for="{{ matrix_form.nh2.id_for_label }}">{{ matrix_form.nh2.label }}</label>
+                {{ matrix_form.nh2.errors }}
+                {{ matrix_form.nh2|add_class:"form-control" }}
+
+                <label for="{{ matrix_form.arn.id_for_label }}">{{ matrix_form.arn.label }}</label>
+                {{ matrix_form.arn.errors }}
+                {{ matrix_form.arn|add_class:"form-control" }}
+
+                <label for="{{ matrix_form.c_o.id_for_label }}">{{ matrix_form.c_o.label }}</label>
+                {{ matrix_form.c_o.errors }}
+                {{ matrix_form.c_o|add_class:"form-control" }}
+
+                <label for="{{ matrix_form.sh.id_for_label }}">{{ matrix_form.sh.label }}</label>
+                {{ matrix_form.sh.errors }}
+                {{ matrix_form.sh|add_class:"form-control" }}
+
+                <label for="{{ matrix_form.nh2_arg.id_for_label }}">{{ matrix_form.nh2_arg.label }}</label>
+                {{ matrix_form.nh2_arg.errors }}
+                {{ matrix_form.nh2_arg|add_class:"form-control" }}
+
+                <label for="{{ matrix_form.h2o.id_for_label }}">{{ matrix_form.h2o.label }}</label>
+                {{ matrix_form.h2o.errors }}
+                {{ matrix_form.h2o|add_class:"form-control" }}
+
+                <label for="{{ matrix_form.zn2.id_for_label }}">{{ matrix_form.zn2.label }}</label>
+                {{ matrix_form.zn2.errors }}
+                {{ matrix_form.zn2|add_class:"form-control" }}
+
+                <label for="{{ matrix_form.cl.id_for_label }}">{{ matrix_form.cl.label }}</label>
+                {{ matrix_form.cl.errors }}
+                {{ matrix_form.cl|add_class:"form-control" }}
+
+                <label for="{{ matrix_form.na.id_for_label }}">{{ matrix_form.na.label }}</label>
+                {{ matrix_form.na.errors }}
+                {{ matrix_form.na|add_class:"form-control" }}
+            </div>
+            <div class="form-group">
+                <div class="btn-group">
+                    <button type="reset" class="btn btn-default">{% trans 'Reset' %}</button>
+                    <button type="submit" class="btn btn-primary">{% trans 'Next step' %}</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-3"></div>
+</div>
+{% endblock %}

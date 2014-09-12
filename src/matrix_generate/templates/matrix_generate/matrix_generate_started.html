@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div class="page-header">
+    <h1>{% trans "MatrixGenerate request sent" %}</h1>
+    <p class="lead">Hi {{ name }}! We received your Matrix Generate request and it is already in the queue for execution. Once it get finished we will send an email with the results to this address: <i>{{ email }}</i>.</p>
+</div>
+{% endblock %}

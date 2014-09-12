@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load i18n %}
+{% load widget_tweaks %}
+
+{% block head_js %}
+<link rel="stylesheet" href="{% static "third-party/magicsuggest/magicsuggest-min.css" %}">
+{% endblock %}
+
+{% block footer_js %}
+<script src="{% static "third-party/magicsuggest/magicsuggest-min.js" %}"></script>
+<script>
+    $('#molecules-form').submit(function(event) {
+
+        var numeric_atoms_input_re = /^(\d+)(,\d+)*$/;
+        var number_of_inputs = $('#id_form-TOTAL_FORMS').val();
+        var i;
+
+        for(i=0; i<number_of_inputs; i++) {
+            var input = $('#id_form-' + i + '-atoms').val();
+            input = input.replace(/ /g,'');
+
+            if(!numeric_atoms_input_re.test(input) ||
+                input.split(',').length != {{ max_atoms_selected }}) {
+
+                $('#id_form-' + i + '-atoms').parent().parent().addClass('has-error');
+                $('#id_form-' + i + '-atoms').focus();
+                event.preventDefault();
+                return false;
+            }
+        }
+        this.submit();
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
+        <h1>{% trans "Attach Molecules" %}</h1>
+        <p class="lead">On this page you must insert the reference molecules to the matrix generate.</p>
+        <form id="molecules-form" class="form-horizontal" role="form" action="" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="reference-molecule" class="col-sm-3 control-label">Reference</label>
+                <div class="col-sm-9">
+                    <select id="" name="reference-molecule" class="form-control">
+                    {% for f in molecule_formset %}
+                        <option value="{{ forloop.counter0 }}">Molecule #{{ forloop.counter }}</option>
+                    {% endfor %}
+                    </select>
+                </div>
+            </div>
+            {{ molecule_formset.management_form }}
+            {% for f in molecule_formset %}
+            {% if f.file.errors %}
+            <div class="form-group file-input has-error">
+            {% else %}
+            <div class="form-group file-input">
+            {% endif %}
+                <label for="{{ f.file.id_for_label }}" class="col-sm-3 control-label">Molecule #{{ forloop.counter}}</label>
+                <div class="col-sm-9">
+                    {{ f.file.errors }}
+                    {{ f.file }}
+                    <p class="help-block">The format of the molecule must be '.gro'.</p>
+                </div>
+            </div>
+            <div class="form-group file-input">
+                <label for="{{ f.file.id_for_label }}" class="col-sm-3 control-label">Molecule #{{ forloop.counter}}</label>
+                <div class="col-sm-9">
+                    {{ f.file.errors }}
+                    {{ f.file }}
+                    <p class="help-block">The format of the molecule must be '.itp'.</p>
+                </div>
+            </div>
+            {% endfor %}
+            <div class="form-group">
+                <label for="" class="col-sm-3 control-label"></label>
+                <div class="col-sm-offset-3 col-sm-9">
+                    <button type="submit" class="btn btn-default">{% trans 'Start Matrix Generation' %}</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-3"></div>
+</div>
+{% endblock %}
