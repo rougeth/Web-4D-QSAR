@@ -13,7 +13,8 @@ The **Web 4D-QSAR** was built and tested using Ubuntu 14.04 LTS but it should ru
 * [Virtualenvwrapper](http://virtualenvwrapper.readthedocs.org/en/latest/) >= ?
 * [PostgreSQL](http://www.postgresql.org/) >= 9.3
 * [RabbitMQ](https://www.rabbitmq.com/) >= 3.3.1
-* [Gromacs](https://gromacs.org) == 4.6.5
+* [Gromacs](https://gromacs.org) >= 4.6.5
+* [LQTAGridPy](https://github.com/rougeth/LQTAgridPy) >= ?
 
 
 ## Preparing the machine (Ubuntu 14.04 LTS)
@@ -54,6 +55,12 @@ $ export /usr/local/bin/virtualenvwrapper.sh
 
 ```
 $ sudo apt-get install gromacs
+```
+
+#### LQTAGridPy
+
+```
+$ sudo pip install lqtagridpy
 ```
 
 #### Topolbuild
