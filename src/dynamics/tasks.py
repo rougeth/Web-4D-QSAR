@@ -1,5 +1,6 @@
 import os
 import subprocess
+import time
 
 from django.conf import settings
 from celery import task
@@ -364,6 +365,7 @@ def align_not_reference(molecule, ref_dir):
         molecule.process_dir,
     ))
 
+    print('Creating not reference molecule /pconfs dir')
     pac_dir = molecule.process_dir + '/pconfs'
     if os.path.exists(pac_dir):
         shutil.rmtree(pac_dir)
@@ -423,6 +425,7 @@ def align_not_reference(molecule, ref_dir):
         pac_dir,
         molecule.process_dir
     ))
+    time.sleep(2)
 
     os.system('rm -r %s' % pac_dir)
     
@@ -439,6 +442,7 @@ def align_reference(molecule):
         molecule.process_dir,
     ))
 
+    print('Creating reference molecule /pconfs dir')
     pac_dir = molecule.process_dir + '/pconfs'
     if os.path.exists(pac_dir):
         shutil.rmtree(pac_dir)
@@ -507,7 +511,7 @@ def align_reference(molecule):
             cwd=molecule.process_dir,
         ).wait()
 
-    os.system('cat {}/sem_FAD_*.pdb > {}/PAC_ref.pdf'.format(
+    os.system('cat {}/sem_FAD_*.pdb > {}/PAC_ref.pdb'.format(
         pac_dir,
         molecule.process_dir
     ))
