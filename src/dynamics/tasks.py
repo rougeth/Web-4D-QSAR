@@ -392,14 +392,15 @@ def align_not_reference(molecule, ref_dir):
             '/usr/bin/g_confrms',
             '-f1', ref_dir + '/pconfs/prot_ref0.pdb',
             '-n1', ref_dir + '/PAC_atoms.ndx',
-            '-f2', ref_dir + '/pconfs/prot_ref%s.pdb' % f,
+            '-f2', pac_dir + '/alinha%s.pdb' % f,
             '-n2', molecule.process_dir + '/PAC_atoms.ndx',
-            '-o', pac_dir + '/prot_fitted_%s.pdb' % f,
+            '-o', pac_dir + '/f_ajus_%s.pdb' % f,
             '-one',
             '-nice', '0',
             '-quiet'],
             cwd=molecule.process_dir,
         ).wait()
+    
 
     for f in frames:
         os.system('awk \'match($0," SOL ") == 0 {{print $0}}\' {} > {}'.format(
@@ -407,7 +408,7 @@ def align_not_reference(molecule, ref_dir):
             pac_dir + '/sem_SOL_%s.pdb' % f
         ))
 
-    os.system('cat {}/sem_SOL_*.pdb > {}/PAC_ref.pdb'.format(
+    os.system('cat {}/sem_SOL_*.pdb > {}/PAC_done.pdb'.format(
         pac_dir,
         molecule.process_dir
     ))
@@ -425,9 +426,8 @@ def align_not_reference(molecule, ref_dir):
         pac_dir,
         molecule.process_dir
     ))
-    time.sleep(2)
 
-    os.system('rm -r %s' % pac_dir)
+    #os.system('rm -r %s' % pac_dir)
     
     return True
 
