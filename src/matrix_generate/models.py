@@ -17,6 +17,25 @@ class MatrixGenerate(models.Model):
 
     # Matrix Generate params
     number_of_molecules = models.IntegerField(default=1)
+
+    # Flags
+    configured = models.BooleanField(default=False)
+    process_finished = models.BooleanField(default=False)
+    email_sent = models.BooleanField(default=False)
+
+    started = models.DateField(auto_now_add=True)
+
+class Molecule(models.Model):
+    matrixGenerate = models.ForeignKey(MatrixGenerate)
+    file = models.FileField(upload_to=path_builder)
+
+    # Flag
+    reference = models.BooleanField(default=False)
+
+class Box(models.Model):
+    matrixGenerate = models.ForeignKey(MatrixGenerate)
+
+    # Box Information
     box_dimension_x = models.IntegerField(default=3)
     box_dimension_y = models.IntegerField(default=3)
     box_dimension_z = models.IntegerField(default=3)
@@ -24,6 +43,7 @@ class MatrixGenerate(models.Model):
     box_coordinate_y = models.IntegerField(default=0)
     box_coordinate_z = models.IntegerField(default=0)
 
+    # Atoms Probe
     coo = models.BooleanField("COO-")
     nh3 = models.BooleanField("NH3+")
     ch3 = models.BooleanField("CH3-")
@@ -38,18 +58,3 @@ class MatrixGenerate(models.Model):
     zn2 = models.BooleanField("Zn2+")
     cl = models.BooleanField("Cl-")
     na = models.BooleanField("Na+")
-
-    # Flags
-    configured = models.BooleanField(default=False)
-    process_finished = models.BooleanField(default=False)
-    email_sent = models.BooleanField(default=False)
-
-    started = models.DateField(auto_now_add=True)
-
-
-class Molecule(models.Model):
-    matrixGenerate = models.ForeignKey(MatrixGenerate)
-    file = models.FileField(upload_to=path_builder)
-
-    # Flag
-    reference = models.BooleanField(default=False)

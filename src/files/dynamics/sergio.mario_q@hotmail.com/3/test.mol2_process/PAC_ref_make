@@ -1,0 +1,80 @@
+#!/bin/bash
+#
+# Fitting alternative
+#
+rm -r $PWD/pconfs
+mkdir $PWD/pconfs
+echo "   "
+echo " Alinhamento LQTA-QSAR independente do receptor para molécula de referência. "
+echo " Apenas átomos do ligante serão alinhado. "
+echo "   "
+echo "   "
+echo -n " Digite o tempo inicial para alinhamento: "
+read bg
+/usr/local/gromacs_4.0.5/bin/trjconv -b $bg -f md300.trr -s md300.tpr -fit rot+trans -sep -o pconfs/prot_ref.pdb -nice 0
+#
+# alinhamento
+#
+ls pconfs/
+echo "   "
+echo -n " Digite o número máximo de frames obtidos:  "
+#
+read uf
+for ((  i = 1 ;  i <= $uf ;  i++  ))
+do
+/usr/local/gromacs_4.0.5/bin/g_confrms -f1 pconfs/prot_ref0.pdb -n1 PAC_atoms.ndx -f2 pconfs/prot_ref$i.pdb -n2 PAC_atoms.ndx -o pconfs/prot_fitted_$i.pdb -one -nice 0
+done
+#
+# Remover coordenadas
+# 
+echo "   "
+echo " Removendo coordenadas átomos não ligantes "
+echo "   "
+for ((  j = 1 ;  j <= $uf ;  j++  ))
+do
+awk 'match($0," A ") == 0 {print $0}' pconfs/prot_fitted_$j.pdb > pconfs/sem_prot_$j.pdb 
+done 
+#
+# Remover Solvente
+#
+echo "   "
+echo " Removendo coordenadas do solvente "
+echo "   "
+for ((  k = 1 ;  k <= $uf ;  k++  ))
+do
+awk 'match($0," SOL ") == 0 {print $0}' pconfs/sem_prot_$k.pdb > pconfs/sem_SOL_$k.pdb 
+done 
+#
+# Remover IONS: Modificar essa parte se necessário
+#
+for ((  d = 1 ;  d <= $uf ;  d++  ))
+do
+awk 'match($0," Cl ") == 0 {print $0}' pconfs/sem_SOL_$d.pdb > pconfs/sem_NA_$d.pdb 
+done 
+#
+#
+#
+for ((  d = 1 ;  d <= $uf ;  d++  ))
+do
+awk 'match($0," FAD ") == 0 {print $0}' pconfs/sem_NA_$d.pdb > pconfs/sem_FAD_$d.pdb 
+done 
+#
+#
+#
+cat pconfs/sem_FAD_*.pdb > PAC_ref.pdb
+#
+# Converter
+#
+for ((  l = 1 ;  l <= $uf ;  l++  ))
+do
+/usr/local/gromacs_4.0.5/bin/editconf -f pconfs/sem_FAD_$l.pdb -o pconfs/gro_$l.gro
+done
+#
+# Concatenar 
+#
+cat pconfs/gro_* > PAC_ref.gro
+rm pconfs/sem*
+rm pconfs/*.gro
+echo "   "
+echo " Pronto: Saída PAC_ref.(gro and pdb) "
+echo "   "

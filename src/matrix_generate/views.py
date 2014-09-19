@@ -95,7 +95,7 @@ def attach_molecules_post(request, matrix_generate):
         request.session['matrix_generate_id'] = None
 
         # Starts the task to process the new matrix_generate
-        # tasks.matrix_generate.delay(matrix_generate)
+        # tasks.task_create_molecule_process(matrix_generate)
 
         context = {
                 'name': matrix_generate.name,
