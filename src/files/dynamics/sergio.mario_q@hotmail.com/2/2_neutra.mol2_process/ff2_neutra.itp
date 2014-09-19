@@ -1,9 +1,0 @@
-#define _FF_GAFF
-#define _FF_GAFF
-#define _FF_USER
-
-[ defaults ]
-;nbfunc     comb-rule      gen-pairs     fudgeLJ      fudgeQQ
-      1             2            yes         0.5      0.833333
-
-#include "ff2_neutranb.itp"
