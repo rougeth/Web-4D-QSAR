@@ -55,7 +55,8 @@ def attach_molecules(request):
             'molecule_formset': molecule_formset,
         }
 
-        return render(request, 'matrix_generate/attach_matrix_generate_files.html', context)
+        return render(request, 'matrix_generate/attach_matrix_generate_files.html',
+            context)
     else:
         return attach_molecules_post(request, matrix_generate)
 
