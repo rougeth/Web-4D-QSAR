@@ -4,7 +4,7 @@ from django.forms.formsets import formset_factory
 from django.core.urlresolvers import reverse
 
 from matrix_generate.models import MatrixGenerate, Molecule
-from matrix_generate.forms import MatrixGenerateForm, MoleculeForm
+from matrix_generate.forms import MatrixGenerateForm, MoleculeForm, BoxForm
 from matrix_generate import tasks
 
 
@@ -18,7 +18,7 @@ def matrix_generate(request):
         if matrix_form.is_valid():
             matrix_generate = matrix_form.save()
             request.session['matrix_generate_id'] = matrix_generate.id
-            return HttpResponseRedirect('/matrix_generate/attach-molecules')
+            return HttpResponseRedirect('/matrix/attach-molecules')
         else:
             context = {
                 'matrix_form': matrix_form,
@@ -38,12 +38,12 @@ def attach_molecules(request):
     matrix_generate_id = request.session.get('matrix_generate_id')
     if not matrix_generate_id:
         request.session['matrix_generate_id'] = None
-        return HttpResponseRedirect('/matrix_generate/matrix_generate')
+        return HttpResponseRedirect('/matrix/generate')
 
     matrix_generate = MatrixGenerate.objects.filter(id=matrix_generate_id)[0]
     if matrix_generate.configured:
         request.session['matrix_generate_id'] = None
-        return HttpResponseRedirect('/matrix_generate/matrix_generate')
+        return HttpResponseRedirect('/matrix/generate')
 
     molecule_formset = formset_factory(
         MoleculeForm,
@@ -77,23 +77,16 @@ def attach_molecules_post(request, matrix_generate):
             context)
 
     else:
-        reference = int(request.POST.get('reference-molecule'))
 
         for i, f in enumerate(molecule_formset):
-            if reference == i:
-                ref = True
-            else:
-                ref = False
-
             new_molecule = Molecule(
                 matrix_generate=matrix_generate,
                 file=f.cleaned_data['file'],
-                reference=ref,
             ).save()
 
         matrix_generate.configured = True
         matrix_generate.save()
-        request.session['matrix_generate_id'] = None
+        request.session['matrix_generate_id'] = matrix_generate.id
 
         # Starts the task to process the new matrix_generate
         # tasks.task_create_molecule_process(matrix_generate)
@@ -102,4 +95,22 @@ def attach_molecules_post(request, matrix_generate):
                 'name': matrix_generate.name,
                 'email': matrix_generate.email,
         }
-        return render(request, 'matrix_generate/matrix_generate_started.html', context)
+        return HttpResponseRedirect('/matrix/data/')
+
+def matrix_data(request):
+
+    matrix_generate_id = request.session.get('matrix_generate_id')
+    if not matrix_generate_id:
+        request.session['matrix_generate_id'] = None
+        return HttpResponseRedirect('/matrix/generate/')
+
+    matrix_generate = MatrixGenerate.objects.filter(id=matrix_generate_id)[0]
+    if matrix_generate.configured:
+        request.session['matrix_generate_id'] = None
+        return HttpResponseRedirect('/matrix/attach-molecules/')
+
+    context = {
+        'box_form': BoxForm()
+    }
+
+    return render(request, 'matrix_generate/matrix_generate_data.html', context)

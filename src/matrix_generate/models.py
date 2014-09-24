@@ -4,7 +4,7 @@ from django.db import models
 def path_builder(instance, filename):
     filename = filename.replace(' ', '_')
 
-    return 'files/dynamics/{}/{}/{}'.format(
+    return 'files/matrix-dynamics/{}/{}/{}'.format(
         instance.matrix_generate.email,
         instance.matrix_generate.id,
         filename
@@ -22,18 +22,14 @@ class MatrixGenerate(models.Model):
     configured = models.BooleanField(default=False)
     process_finished = models.BooleanField(default=False)
     email_sent = models.BooleanField(default=False)
-
     started = models.DateField(auto_now_add=True)
 
 class Molecule(models.Model):
-    matrixGenerate = models.ForeignKey(MatrixGenerate)
+    matrix_generate = models.ForeignKey(MatrixGenerate)
     file = models.FileField(upload_to=path_builder)
 
-    # Flag
-    reference = models.BooleanField(default=False)
-
 class Box(models.Model):
-    matrixGenerate = models.ForeignKey(MatrixGenerate)
+    matrix_generate = models.ForeignKey(MatrixGenerate)
 
     # Box Information
     box_dimension_x = models.IntegerField(default=3)

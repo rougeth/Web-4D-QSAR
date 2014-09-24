@@ -42,16 +42,7 @@
         <p class="lead">On this page you must insert the reference molecules to the matrix generate.</p>
         <form id="molecules-form" class="form-horizontal" role="form" action="" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
-            <div class="form-group">
-                <label for="reference-molecule" class="col-sm-3 control-label">Reference</label>
-                <div class="col-sm-9">
-                    <select id="" name="reference-molecule" class="form-control">
-                    {% for f in molecule_formset %}
-                        <option value="{{ forloop.counter0 }}">Molecule #{{ forloop.counter }}</option>
-                    {% endfor %}
-                    </select>
-                </div>
-            </div>
+
             {{ molecule_formset.management_form }}
             {% for f in molecule_formset %}
             {% if f.file.errors %}
