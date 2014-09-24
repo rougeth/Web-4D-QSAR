@@ -39,21 +39,23 @@
     <div class="col-md-3"></div>
     <div class="col-md-6">
         <h1>{% trans "Attach Molecules" %}</h1>
-        <p class="lead">On this page you must insert the reference molecules to the dynamics and alignments.</p>
+        <p class="lead">{% trans 'On this page you must insert the reference molecules to the dynamics and alignments.' %}</p>
         <form id="molecules-form" class="form-horizontal" role="form" action="" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="form-group">
-                <label for="reference-molecule" class="col-sm-3 control-label">Reference</label>
+                <label for="reference-molecule" class="col-sm-3 control-label">{% trans 'Reference' %}</label>
                 <div class="col-sm-9">
                     <select id="" name="reference-molecule" class="form-control">
                     {% for f in molecule_formset %}
-                        <option value="{{ forloop.counter0 }}">Molecule #{{ forloop.counter }}</option>
+                    <option value="{{ forloop.counter0 }}">{% trans 'Molecule' %} #{{ forloop.counter }}</option>
                     {% endfor %}
                     </select>
                 </div>
             </div>
             {{ molecule_formset.management_form }}
             {% for f in molecule_formset %}
+            <hr>
+
             {% if f.file.errors %}
             <div class="form-group file-input has-error">
             {% else %}
@@ -63,7 +65,7 @@
                 <div class="col-sm-9">
                     {{ f.file.errors }}
                     {{ f.file }}
-                    <p class="help-block">The format of the molecule must be '.mol2'.</p>
+                    <p class="help-block">{% trans 'The format of the file must be \'.mol2\'.' %}</p>
                 </div>
             </div>
             <div class="form-group atoms-input">

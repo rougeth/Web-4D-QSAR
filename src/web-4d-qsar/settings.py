@@ -87,6 +87,12 @@ USE_L10N = True
 
 USE_TZ = True
 
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/1.6/howto/static-files/
+
+STATIC_URL = '/static/'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'static-root')
 
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
@@ -95,11 +101,6 @@ STATICFILES_DIRS = (
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'templates'),
 )
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.6/howto/static-files/
-
-STATIC_URL = '/static/'
 
 # Tasks settings
 WEB_4D_QSAR_STATIC_DIR  = os.path.join(BASE_DIR, 'files/static')
