@@ -57,12 +57,6 @@ $ export /usr/local/bin/virtualenvwrapper.sh
 $ sudo apt-get install gromacs
 ```
 
-#### LQTAGridPy
-
-```
-$ sudo pip install lqtagridpy
-```
-
 #### Topolbuild
 
 ```
