@@ -5,11 +5,16 @@
 <head>
     <meta charset="UTF-8">
     <title>Web 4D-QSAR</title>
+    <link rel="stylesheet" href="{% static 'bootstrap/dist/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
 </head>
 <body>
 
     {% block content %}
     {% endblock %}
+
+    <script src="{% static 'bootstrap/dist/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'jquery/dist/js/jquery.min.js' %}"></script>
 
 </body>
 </html>
