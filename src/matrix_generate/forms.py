@@ -12,7 +12,7 @@ class MatrixGenerateForm(forms.ModelForm):
 class MoleculeForm(forms.Form):
     file = forms.FileField(required=True)
 
-class BoxForm(forms.ModelForm):
+class BoxForm(forms.Form):
     fields = ['box_dimension_x', 'box_dimension_y', 'box_dimension_z',
         'box_coordinate_x', 'box_coordinate_y', 'box_coordinate_z',
         'coo', 'nh3', 'ch3', 'arc', 'oh', 'nh2', 'arn', 'c_o', 'sh',

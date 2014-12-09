@@ -10,6 +10,7 @@
         <form class="form" role="form" action="" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             {{ matrix_form.non_field_errors }}
+            {{ box_form.non_field_errors }}
             {{ molecule_formset.non_field_errors }}
             <div class="alert alert-info">
                 <p class="lead">User data</p>
@@ -33,7 +34,103 @@
                 <label for="{{ matrix_form.number_of_molecules.id_for_label }}">{{ matrix_form.number_of_molecules.label }}</label>
                 {{ matrix_form.number_of_molecules.errors }}
                 {{ matrix_form.number_of_molecules|add_class:"form-control" }}
+                <span class="help-block"></span>
+            </div>
+            <div class="form-group"> 
+                <label for="{{ box_form.box_dimension_x.id_for_label }}">{{ box_form.box_dimension_x.label }}</label>
+                {{ box_form.box_dimension_x.errors }}
+                {{ box_form.box_dimension_x|add_class:"form-control" }}
                 <span class="help-block">Inform the dimension box.</span>
+            </div>
+            <div class="form-group">
+                <label for="{{ box_form.box_dimension_y.id_for_label }}">{{ box_form.box_dimension_y.label }}</label>
+                {{ box_form.box_dimension_y.errors }}
+                {{ box_form.box_dimension_y|add_class:"form-control" }}
+                <span class="help-block">Inform the dimension box.</span>
+            </div>
+            <div class="form-group">
+                <label for="{{ box_form.box_dimension_z.id_for_label }}">{{ box_form.box_dimension_z.label }}</label>
+                {{ box_form.box_dimension_z.errors }}
+                {{ box_form.box_dimension_z|add_class:"form-control" }}
+                <span class="help-block">Inform the dimension box.</span>
+            </div>
+            <div class="form-group">
+                <label for="{{ box_form.box_coordinate_x.id_for_label }}">{{ box_form.box_coordinate_x.label }}</label>
+                {{ box_form.box_coordinate_x.errors }}
+                {{ box_form.box_coordinate_x|add_class:"form-control" }}
+                <span class="help-block">Inform the coordinate box.</span>
+            </div>
+            <div class="form-group">
+                <label for="{{ box_form.box_coordinate_y.id_for_label }}">{{ box_form.box_coordinate_y.label }}</label>
+                {{ box_form.box_coordinate_y.errors }}
+                {{ box_form.box_coordinate_y|add_class:"form-control" }}
+                <span class="help-block">Inform the coordinate box.</span>
+            </div>
+            <div class="form-group">
+                <label for="{{ box_form.box_coordinate_z.id_for_label }}">{{ box_form.box_coordinate_z.label }}</label>
+                {{ box_form.box_coordinate_z.errors }}
+                {{ box_form.box_coordinate_z|add_class:"form-control" }}
+                <span class="help-block">Inform the coordinate box.</span>
+            </div>
+            <div class="alert alert-info">
+                <p class="lead">Probes</p>
+            </div>
+            <div class="form-group">
+                <label for="{{ box_form.coo.id_for_label }}">{{ box_form.coo.label }}</label>
+                {{ box_form.coo.errors }}
+                {{ box_form.coo|add_class:"form-control" }}
+
+                <label for="{{ box_form.nh3.id_for_label }}">{{ box_form.nh3.label }}</label>
+                {{ box_form.nh3.errors }}
+                {{ box_form.nh3|add_class:"form-control" }}
+
+                <label for="{{ box_form.ch3.id_for_label }}">{{ box_form.ch3.label }}</label>
+                {{ box_form.ch3.errors }}
+                {{ box_form.ch3|add_class:"form-control" }}
+
+                <label for="{{ box_form.arc.id_for_label }}">{{ box_form.arc.label }}</label>
+                {{ box_form.arc.errors }}
+                {{ box_form.arc|add_class:"form-control" }}
+
+                <label for="{{ box_form.oh.id_for_label }}">{{ box_form.oh.label }}</label>
+                {{ box_form.oh.errors }}
+                {{ box_form.oh|add_class:"form-control" }}
+
+                <label for="{{ box_form.nh2.id_for_label }}">{{ box_form.nh2.label }}</label>
+                {{ box_form.nh2.errors }}
+                {{ box_form.nh2|add_class:"form-control" }}
+
+                <label for="{{ box_form.arn.id_for_label }}">{{ box_form.arn.label }}</label>
+                {{ box_form.arn.errors }}
+                {{ box_form.arn|add_class:"form-control" }}
+
+                <label for="{{ box_form.c_o.id_for_label }}">{{ box_form.c_o.label }}</label>
+                {{ box_form.c_o.errors }}
+                {{ box_form.c_o|add_class:"form-control" }}
+
+                <label for="{{ box_form.sh.id_for_label }}">{{ box_form.sh.label }}</label>
+                {{ box_form.sh.errors }}
+                {{ box_form.sh|add_class:"form-control" }}
+
+                <label for="{{ box_form.nh2_arg.id_for_label }}">{{ box_form.nh2_arg.label }}</label>
+                {{ box_form.nh2_arg.errors }}
+                {{ box_form.nh2_arg|add_class:"form-control" }}
+
+                <label for="{{ box_form.h2o.id_for_label }}">{{ box_form.h2o.label }}</label>
+                {{ box_form.h2o.errors }}
+                {{ box_form.h2o|add_class:"form-control" }}
+
+                <label for="{{ box_form.zn2.id_for_label }}">{{ box_form.zn2.label }}</label>
+                {{ box_form.zn2.errors }}
+                {{ box_form.zn2|add_class:"form-control" }}
+
+                <label for="{{ box_form.cl.id_for_label }}">{{ box_form.cl.label }}</label>
+                {{ box_form.cl.errors }}
+                {{ box_form.cl|add_class:"form-control" }}
+
+                <label for="{{ box_form.na.id_for_label }}">{{ box_form.na.label }}</label>
+                {{ box_form.na.errors }}
+                {{ box_form.na|add_class:"form-control" }}
             </div>
             <div class="form-group">
                 <div class="btn-group">

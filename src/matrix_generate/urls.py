@@ -4,5 +4,4 @@ from django.conf.urls import patterns, url
 urlpatterns = patterns('matrix_generate.views',
     url(r'^generate/$', 'matrix_generate', name='matrix_generate'),
     url(r'^attach-molecules/$', 'attach_molecules', name='attach_molecules'),
-    url(r'^data/$', 'matrix_data', name='matrix_data'),
 )

@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.forms.formsets import formset_factory
 from django.core.urlresolvers import reverse
 
-from matrix_generate.models import MatrixGenerate, Molecule
+from matrix_generate.models import MatrixGenerate, Molecule, Box
 from matrix_generate.forms import MatrixGenerateForm, MoleculeForm, BoxForm
 from matrix_generate import tasks
 
@@ -14,19 +14,22 @@ def matrix_generate(request):
 
     if request.method == 'POST':
         matrix_form = MatrixGenerateForm(request.POST)
+        box_form = BoxForm(request.POST)
 
-        if matrix_form.is_valid():
+        if matrix_form.is_valid() and box_form.is_valid():
             matrix_generate = matrix_form.save()
             request.session['matrix_generate_id'] = matrix_generate.id
             return HttpResponseRedirect('/matrix/attach-molecules')
         else:
             context = {
                 'matrix_form': matrix_form,
+                'box_form': box_form,
             }
             return render(request, 'matrix_generate/matrix_generate.html', context)
 
     context = {
         'matrix_form': MatrixGenerateForm(),
+        'box_form': BoxForm(),
     }
     return render(request, 'matrix_generate/matrix_generate.html', context)
 
@@ -95,22 +98,4 @@ def attach_molecules_post(request, matrix_generate):
                 'name': matrix_generate.name,
                 'email': matrix_generate.email,
         }
-        return HttpResponseRedirect('/matrix/data/')
-
-def matrix_data(request):
-
-    matrix_generate_id = request.session.get('matrix_generate_id')
-    if not matrix_generate_id:
-        request.session['matrix_generate_id'] = None
-        return HttpResponseRedirect('/matrix/generate/')
-
-    matrix_generate = MatrixGenerate.objects.filter(id=matrix_generate_id)[0]
-    if matrix_generate.configured:
-        request.session['matrix_generate_id'] = None
-        return HttpResponseRedirect('/matrix/attach-molecules/')
-
-    context = {
-        'box_form': BoxForm()
-    }
-
-    return render(request, 'matrix_generate/matrix_generate_data.html', context)
+        return render(request, 'matrix_generate/matrix_generate_started.html', context)
