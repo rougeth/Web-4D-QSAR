@@ -14,8 +14,12 @@ BASE_DIR = getattr(settings, 'BASE_DIR')
 STATIC_DIR = getattr(settings, 'WEB_4D_QSAR_STATIC_DIR')
 TOPOLBUILD_DIR = getattr(settings, 'TOPOLBUILD_DIR')
 CELERY_OFF = getattr(settings, 'CELERY_OFF')
+GROMACS_DIR = getattr(settings, 'GROMACS_DIR')
 
 logger = get_task_logger(__name__)
+
+
+gromacs_path = lambda app: os.path.join(GROMACS_DIR, app)
 
 
 def task_create_molecule_process(dynamic):
@@ -71,7 +75,7 @@ def task_prepare_files_for_gromacs(molecule):
         molecule.process_dir, molecule.filename_without_extension))
 
     subprocess.Popen([
-        '/usr/bin/editconf',
+        gromacs_path('editconf'),
         '-bt', 'cubic',
         '-f', 'lig.gro',
         '-o', 'lig_box.gro',
@@ -81,7 +85,7 @@ def task_prepare_files_for_gromacs(molecule):
     ).wait()
 
     subprocess.Popen([
-       '/usr/bin/genbox',
+       gromacs_path('genbox'),
        '-cp', 'lig_box.gro',
        '-cs', 'tip3p.gro',
        '-o', 'lig_h2o.gro',
@@ -91,7 +95,7 @@ def task_prepare_files_for_gromacs(molecule):
     ).wait()
 
     subprocess.Popen([
-       '/usr/bin/grompp',
+       gromacs_path('grompp'),
        '-f', 'st.mdp',
        '-c', 'lig_h2o.gro',
        '-p', 'lig.top',
@@ -117,7 +121,7 @@ def task_check_sytem_charge(molecule):
             stdout=subprocess.PIPE)
 
         subprocess.Popen([
-            '/usr/bin/genion',
+            gromacs_path('genion'),
             '-s', 'st.tpr',
             '-nn', str(charge),
             '-o', 'st.gro',
@@ -149,7 +153,7 @@ def task_check_sytem_charge(molecule):
             stdout=subprocess.PIPE)
 
         subprocess.Popen([
-            '/usr/bin/genion',
+            gromacs_path('/usr/bin/genion'),
             '-s', 'st.tpr',
             '-np', str(abs(charge)),
             '-o', 'st.gro',
@@ -187,7 +191,7 @@ def task_dynamic(molecule, charge):
 
     # dinamica.sh
     subprocess.Popen([
-        '/usr/bin/grompp',
+        gromacs_path('grompp'),
         '-f', 'st.mdp',
         '-c', struct_file,
         '-p', 'lig.top',
@@ -201,7 +205,7 @@ def task_dynamic(molecule, charge):
         return False
 
     subprocess.Popen([
-        '/usr/bin/mdrun',
+        gromacs_path('mdrun'),
         '-s', 'st.tpr',
         '-o', 'st.trr',
         '-c', 'cg.gro',
@@ -215,7 +219,7 @@ def task_dynamic(molecule, charge):
         return False
 
     subprocess.Popen([
-        '/usr/bin/grompp',
+        gromacs_path('grompp'),
         '-f', 'cg.mdp',
         '-c', 'cg.gro',
         '-p', 'lig.top',
@@ -228,7 +232,7 @@ def task_dynamic(molecule, charge):
         return False
 
     subprocess.Popen([
-        '/usr/bin/mdrun',
+        gromacs_path('mdrun'),
         '-s', 'cg.tpr',
         '-o', 'cg.trr',
         '-c', 'gs.gro',
@@ -242,7 +246,7 @@ def task_dynamic(molecule, charge):
         return False
 
     subprocess.Popen([
-        '/usr/bin/grompp',
+        gromacs_path('grompp'),
         '-f', 'gs.mdp',
         '-c', 'cg.gro',
         '-p', 'lig.top',
@@ -277,7 +281,7 @@ def task_dynamic(molecule, charge):
     # Dinamic
     # PR
     subprocess.Popen([
-        '/usr/bin/grompp',
+        gromacs_path('grompp'),
         '-f', 'pr.mdp',
         '-c', 'pr.gro',
         '-p', 'lig.top',
@@ -291,7 +295,7 @@ def task_dynamic(molecule, charge):
         return False
 
     subprocess.Popen([
-        '/usr/bin/mdrun',
+        gromacs_path('mdrun'),
         '-s', 'pr.tpr',
         '-o', 'pr.trr',
         '-c', 'md50.gro',
@@ -307,7 +311,7 @@ def task_dynamic(molecule, charge):
     ks = [50, 100, 200, 350, 300]
     for i, k in enumerate(ks):
         subprocess.Popen([
-            '/usr/bin/grompp',
+            gromacs_path('grompp'),
             '-f', 'md%s.mdp' % k,
             '-c', 'md%s.gro' % k,
             '-p', 'lig.top',
@@ -327,7 +331,7 @@ def task_dynamic(molecule, charge):
             c_arg = 'pmd.gro'
 
         subprocess.Popen([
-            '/usr/bin/mdrun',
+            gromacs_path('mdrun'),
             '-s', 'md%s.tpr' % k,
             '-o', 'md%s.trr' % k,
             '-c', c_arg,
@@ -372,12 +376,12 @@ def align_not_reference(molecule, ref_dir):
     os.makedirs(pac_dir)
 
     subprocess.Popen([
-        '/usr/bin/trjconv',
+        gromacs_path('trjconv'),
         '-b', '20',
         '-f', 'md300.trr',
         '-s', 'md300.tpr',
         '-fit', 'rot+trans',
-        '-sep', 
+        '-sep',
         '-o', pac_dir + '/alinha.pdb',
         '-nice', '0',
         '-quiet'],
@@ -389,7 +393,7 @@ def align_not_reference(molecule, ref_dir):
 
     for f in frames:
         subprocess.Popen([
-            '/usr/bin/g_confrms',
+            gromacs_path('g_confrms'),
             '-f1', ref_dir + '/pconfs/prot_ref0.pdb',
             '-n1', ref_dir + '/PAC_atoms.ndx',
             '-f2', pac_dir + '/alinha%s.pdb' % f,
@@ -400,7 +404,7 @@ def align_not_reference(molecule, ref_dir):
             '-quiet'],
             cwd=molecule.process_dir,
         ).wait()
-    
+
 
     for f in frames:
         os.system('awk \'match($0," SOL ") == 0 {{print $0}}\' {} > {}'.format(
@@ -415,7 +419,7 @@ def align_not_reference(molecule, ref_dir):
 
     for f in frames:
         subprocess.Popen([
-            '/usr/bin/editconf',
+            gromacs_path('editconf'),
             '-f', pac_dir + '/sem_SOL_%s.pdb' % f,
             '-o', pac_dir + '/gro_%s.gro' % f,
             '-quiet'],
@@ -428,7 +432,7 @@ def align_not_reference(molecule, ref_dir):
     ))
 
     #os.system('rm -r %s' % pac_dir)
-    
+
     return True
 
 
@@ -449,12 +453,12 @@ def align_reference(molecule):
     os.makedirs(pac_dir)
 
     subprocess.Popen([
-        '/usr/bin/trjconv',
+        gromacs_path('trjconv'),
         '-b', '20',
         '-f', 'md300.trr',
         '-s', 'md300.tpr',
         '-fit', 'rot+trans',
-        '-sep', 
+        '-sep',
         '-o', pac_dir + '/prot_ref.pdb',
         '-nice', '0',
         '-quiet'],
@@ -466,7 +470,7 @@ def align_reference(molecule):
 
     for f in frames:
         subprocess.Popen([
-            '/usr/bin/g_confrms',
+            gromacs_path('g_confrms'),
             '-f1', pac_dir + '/prot_ref0.pdb',
             '-n1', molecule.process_dir + '/PAC_atoms.ndx',
             '-f2', pac_dir + '/prot_ref%s.pdb' % f,
@@ -504,7 +508,7 @@ def align_reference(molecule):
 
     for f in frames:
         subprocess.Popen([
-            '/usr/bin/editconf',
+            gromacs_path('editconf'),
             '-f', pac_dir + '/sem_FAD_%s.pdb' % f,
             '-o', pac_dir + '/gro_%s.gro' % f,
             '-quiet'],
@@ -557,11 +561,11 @@ def molecular_dynamics(dynamic):
 
     logger.info('Start alignment.')
     ref_molecule = [m for m in  molecules if m.molecule.reference][0]
-    not_ref_molecules = [m for m in molecules if not m.molecule.reference] 
+    not_ref_molecules = [m for m in molecules if not m.molecule.reference]
 
     align_reference(ref_molecule)
     ref_dir = ref_molecule.process_dir
-    
+
     for molecule in not_ref_molecules:
         align_not_reference(molecule, ref_dir)
 
