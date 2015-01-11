@@ -153,7 +153,7 @@ def task_check_sytem_charge(molecule):
             stdout=subprocess.PIPE)
 
         subprocess.Popen([
-            gromacs_path('/usr/bin/genion'),
+            gromacs_path('genion'),
             '-s', 'st.tpr',
             '-np', str(abs(charge)),
             '-o', 'st.gro',
@@ -375,18 +375,12 @@ def align_not_reference(molecule, ref_dir):
         shutil.rmtree(pac_dir)
     os.makedirs(pac_dir)
 
-    subprocess.Popen([
+    print(molecule.process_dir)
+    os.system('echo "0\n0" | {0} -b 20 -f {1}/md300.trr -s {1}/md300.tpr -fit rot+trans -sep -o {2} -nice 0 -quiet'.format(
         gromacs_path('trjconv'),
-        '-b', '20',
-        '-f', 'md300.trr',
-        '-s', 'md300.tpr',
-        '-fit', 'rot+trans',
-        '-sep',
-        '-o', pac_dir + '/alinha.pdb',
-        '-nice', '0',
-        '-quiet'],
-        cwd=molecule.process_dir,
-    ).wait()
+        molecule.process_dir,
+        pac_dir + '/alinha.pdb',
+    ))
 
     frames = len(os.listdir(pac_dir))
     frames = range(frames);
@@ -452,18 +446,12 @@ def align_reference(molecule):
         shutil.rmtree(pac_dir)
     os.makedirs(pac_dir)
 
-    subprocess.Popen([
+
+    os.system('echo "0\n0" | {0} -b 20 -f {1}/md300.trr -s {1}/md300.tpr -fit rot+trans -sep -o {2} -nice 0 -quiet'.format(
         gromacs_path('trjconv'),
-        '-b', '20',
-        '-f', 'md300.trr',
-        '-s', 'md300.tpr',
-        '-fit', 'rot+trans',
-        '-sep',
-        '-o', pac_dir + '/prot_ref.pdb',
-        '-nice', '0',
-        '-quiet'],
-        cwd=molecule.process_dir,
-    ).wait()
+        molecule.process_dir,
+        pac_dir + '/prot_ref.pdb',
+    ))
 
     frames = len(os.listdir(pac_dir))
     frames = range(frames);
