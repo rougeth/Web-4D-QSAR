@@ -1,0 +1,6 @@
+Django
+django-widget-tweaks
+python-decouple
+dj-database-url
+celery
+LQTAgridPy
