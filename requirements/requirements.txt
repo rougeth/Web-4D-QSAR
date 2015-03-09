@@ -3,6 +3,4 @@ dj-database-url
 python-decouple
 celery>=3.1
 django-widget-tweaks>=1.3
-gunicorn
-ipython
 lqtagridpy
