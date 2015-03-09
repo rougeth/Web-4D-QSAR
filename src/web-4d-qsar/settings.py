@@ -8,6 +8,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.6/ref/settings/
 """
 
+from decouple import config
+from dj_database_url import parse
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -17,14 +20,17 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '#g2zl-73%y5&%5shqdtblk(!q7qus0651kdt5@s+hmo_ku)bj-'
+SECRET_KEY = config(
+    'SECRET_KEY',
+    default='#g2zl-73%y5&%5shqdtblk(!q7qus0651kdt5@s+hmo_ku)bj-'
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', default=True, cast=bool)
 
-TEMPLATE_DEBUG = True
+TEMPLATE_DEBUG = DEBUG
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default=[], cast=list)
 
 
 # Application definition
@@ -46,6 +52,11 @@ INSTALLED_APPS = (
     'matrix_generate',
 )
 
+if DEBUG:
+    INSTALLED_APPS += (
+        'debug_toolbar',
+    )
+
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -64,15 +75,12 @@ WSGI_APPLICATION = 'web-4d-qsar.wsgi.application'
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+    'default': config(
+        'DATABASE_URL',
+        default='sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3'),
+        cast=parse
+    )
 }
-
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'localhost'
-EMAIL_PORT = 25
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
