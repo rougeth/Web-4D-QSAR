@@ -1,7 +1,6 @@
-from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render
+from django.http import HttpResponseRedirect
 from django.forms.formsets import formset_factory
-from django.core.urlresolvers import reverse
 
 from dynamics.models import Dynamic, Molecule
 from dynamics.forms import DynamicForm, MoleculeForm
@@ -78,7 +77,7 @@ def attach_molecules_post(request, dynamic):
             'max_atoms_selected': dynamic.number_of_atoms_for_alignment
         }
         return render(request, 'dynamics/attach_dynamic_files.html',
-            context)
+                      context)
 
     else:
         reference = int(request.POST.get('reference-molecule'))
@@ -94,7 +93,8 @@ def attach_molecules_post(request, dynamic):
                 file=f.cleaned_data['file'],
                 atoms=f.cleaned_data['atoms'],
                 reference=ref,
-            ).save()
+            )
+            new_molecule.save()
 
         dynamic.configured = True
         dynamic.save()
@@ -104,7 +104,7 @@ def attach_molecules_post(request, dynamic):
         tasks.molecular_dynamics.delay(dynamic)
 
         context = {
-                'name': dynamic.name,
-                'email': dynamic.email,
+            'name': dynamic.name,
+            'email': dynamic.email,
         }
         return render(request, 'dynamics/dynamic_started.html', context)
