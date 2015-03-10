@@ -1,19 +1,17 @@
-from django.shortcuts import render, redirect
+from django.views.generic import RedirectView, TemplateView
 
 
-def home(request):
-    return render(request, 'core/home.html')
+class HomeView(TemplateView):
+    template_name = 'core/home.html'
 
 
-def how_it_works(request):
-    return render(request, 'core/how_it_works.html')
+class HowItWorksView(TemplateView):
+    template_name = 'core/how_it_works.html'
 
 
-def docs(request):
-    return redirect(
-        'http://lqta.iqm.unicamp.br/portugues/siteLQTA/LQTAgrid.html'
-    )
+class DocView(RedirectView):
+    url = 'http://lqta.iqm.unicamp.br/portugues/siteLQTA/LQTAgrid.html'
 
 
-def license(request):
-    return render(request, 'core/license.html')
+class LicenseView(TemplateView):
+    template_name = 'core/license.html'
