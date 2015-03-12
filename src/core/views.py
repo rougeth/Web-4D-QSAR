@@ -9,8 +9,9 @@ class HowItWorksView(TemplateView):
     template_name = 'core/how_it_works.html'
 
 
-class DocView(RedirectView):
+class DocsView(RedirectView):
     url = 'http://lqta.iqm.unicamp.br/portugues/siteLQTA/LQTAgrid.html'
+    permanent = False
 
 
 class LicenseView(TemplateView):
