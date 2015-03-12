@@ -2,3 +2,6 @@
 __pycache__
 .vagrant
 *.sqlite3
+*.egg-info
+*.sublime-project
+*.sublime-workspace
