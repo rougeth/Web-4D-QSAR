@@ -9,12 +9,13 @@ The **Web 4D-QSAR** was built and tested using Ubuntu 14.04 LTS but it should ru
 
 * [Git](http://git-scm.com/) >= ?
 * [Python](https://www.python.org/) >= 3
-* [Pip](http://www.pip-installer.org/en/latest/) >= ?
+* [Pip](http://www.pip-installer.org/en/latest/)
 * [Virtualenvwrapper](http://virtualenvwrapper.readthedocs.org/en/latest/) >= ?
 * [PostgreSQL](http://www.postgresql.org/) >= 9.3
 * [RabbitMQ](https://www.rabbitmq.com/) >= 3.3.1
 * [Gromacs](https://gromacs.org) >= 4.6.5
-* [LQTAGridPy](https://github.com/rougeth/LQTAgridPy) >= ?
+* [LQTAGridPy](https://github.com/rougeth/LQTAgridPy)
+* [dos2unix](http://dos2unix.sourceforge.net)
 
 
 ## Preparing the machine (Ubuntu 14.04 LTS)

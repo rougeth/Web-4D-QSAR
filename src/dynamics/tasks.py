@@ -42,6 +42,11 @@ def task_copy_static_files(molecule):
     ))
 
 def task_execute_topolbuild(molecule):
+    os.system('dos2unix {}/{}'.format(
+        molecule.process_dir,
+        molecule.filename
+    ))
+
     subprocess.Popen(['/usr/bin/topolbuild',
         '-n', molecule.filename_without_extension,
         '-dir', TOPOLBUILD_DIR,
