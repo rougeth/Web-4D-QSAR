@@ -2,7 +2,7 @@ from django.db import models
 
 
 def path_builder(instance, filename):
-    filename = filename.replace(' ', '_')
+    filename = re.sub('[^a-zA-Z0-9\-\.]', '_',filename)
 
     return 'files/dynamics/{}/{}/{}'.format(
         instance.dynamic.email,
