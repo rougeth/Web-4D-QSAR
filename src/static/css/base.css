@@ -1,11 +1,13 @@
+
 body {
-  padding-top: 20px;
-  padding-bottom: 20px;
+    font-family: 'Roboto', sans-serif;
+  /*padding-top: 20px;
+  padding-bottom: 20px;*/
 }
 
-body > .container {
+/*body > .container {
     padding: 3em 1em 0 1em;
-}
+}*/
 
 .web-lqta-qsar {
     font-weight: 300;
@@ -13,4 +15,36 @@ body > .container {
 
 .atom-input-margin {
     margin-bottom: 100px;
+}
+.center {
+    text-align: center;
+}
+.container {
+    max-width: 900px;
+}
+.w-jumbotron {
+    background: url('../img/splash-home.png') repeat;
+    padding: 8em 0;
+    margin-bottom: 0;
+    text-align: center;
+}
+.w-jumbotron h1 {
+    font-size: 5em;
+    font-weight: 100;
+    color: #fff;
+}
+.w-jumbotron p {
+    font-size: 2em;
+    color: #99AACA;
+}
+.w-main-links {
+    text-align: center;
+    padding: 30px 0 10px 0;
+}
+
+.w-navbar {
+    margin-bottom: 0;
+    border-radius: 0;
+    background: #171717;
+    border: 0;
 }

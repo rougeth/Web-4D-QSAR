@@ -9,6 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Web 4D-QSAR</title>
 
+    <link href='http://fonts.googleapis.com/css?family=Roboto:400,100,700,400italic,700italic' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="{% static "css/bootstrap.css" %}">
     <link rel="stylesheet" href="{% static "css/base.css" %}">
 
@@ -17,40 +18,8 @@
 
 </head>
 <body>
-    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
-      <div class="container">
-        <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="/">Web 4D-QSAR</a>
-        </div>
+    {% block content %}{% endblock %}
 
-        <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-          <ul class="nav navbar-nav">
-              <li><a href="/how-it-works">{% trans 'How it works' %}</a></li>
-              <li><a href="{% url 'dynamics:new_dynamic' %}">{% trans 'New dynamic' %}</a></li>
-              <li><a href="{% url 'matrix_generate:matrix_generate' %}">{% trans 'Generate Matrix Descriptors' %}</a></li>
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans 'About' %} <b class="caret"></b></a>
-              <ul class="dropdown-menu">
-                  <li><a href="/docs">{% trans 'Documentation' %}</a></li>
-                  <li><a href="/license">{% trans 'License' %}</a></li>
-                  <li><a href="/help">{% trans 'Help' %}</a></li>
-              </ul>
-            </li>
-          </ul>
-        </div><!-- /.navbar-collapse -->
-      </div><!-- /.container-fluid -->
-    </div>
-    <div class="container">
-        {% block content %}{% endblock %}
-    </div>
     <script src="{% static "js/jquery-2.1.0.min.js" %}"></script>
     <script src="{% static "js/bootstrap.js" %}"></script>
     {% block footer_js %}{% endblock %}

@@ -2,32 +2,63 @@
 {% load static %}
 {% load i18n %}
 
+{% block head_js %}
+<style>
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="page-header">
-    <p class="pull-right">
-        <a href="{% url 'dynamics:new_dynamic' %}" class="btn btn-primary">New Dynamic</a>
-        <a href="{% url 'matrix_generate:matrix_generate' %}" class="btn btn-primary">Generate Matrix Descriptors</a>
-    </p>
-    <h1>
-        Web 4D-QSAR
-    <p class="lead">
-        {% trans 'A open source web package to run molecular dynamics and build descriptors in QSAR.' %}
-    </p>
+<nav class="navbar navbar-default w-navbar">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+
+    <div class="collapse navbar-collapse navbar-right" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li><a href="#">Wiki</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Licence</a></li>
+        <li><a href="#">Contact</a></li>
+        <li><a href="#">Help</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="jumbotron w-jumbotron">
+    <div class="container w-jumbotron-container">
+        <h1>Web 4D-QSAR</h1>
+        <p>{% trans "An open source project that generates and validates QSAR modules" %}</p>
+    </div>
 </div>
+<div class="container w-main-links">
+    <a class="btn btn-success btn-lg" href="{% url 'dynamics:new_dynamic' %}" role="button">{% trans "New Dynamic" %}</a>
+    <a class="btn btn-default btn-lg" href="https://github.com/rougeth/web-4d-qsar" role="button">{% trans "View on GitHub" %}</a>
+</div>
+<hr>
 <div class="row">
-    <div class="col-md-8">
-        <h2>{% trans 'What is the Web 4D-QSAR?' %}</h2>
-        <p>{% blocktrans %}The 4D-QSAR Web is a system that involves performing molecular dynamics using GRAMACS, and generation of arrays of molecular descriptors 4D, with a new version of the methodology LQTA-QSAR, the LQTAGridPy. Thus, the result is a well-integrated and functional computational package, abstracting the technical steps of the execution of separate applications such as GROMACS and LQTAGridPy, moreover, the fact of the existence of an environment already configured and available on the Internet.{% endblocktrans %}</p>
-        <img src="{% static 'imgs/web4dqsar.png' %}" alt="">
+    <div class="container">
+        <div class="col-md-4">
+            <h4>Open source</h4>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laboriosam earum dolores repudiandae similique soluta vitae veritatis eos vel laudantium.</p>
+        </div>
+        <div class="col-md-4">
+            <h4>Distributed</h4>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laboriosam earum dolores repudiandae similique soluta vitae veritatis eos vel laudantium.</p>
+        </div>
+        <div class="col-md-4">
+            <h4>Fast</h4>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laboriosam earum dolores repudiandae similique soluta vitae veritatis eos vel laudantium.</p>
+        </div>
     </div>
-    <div class="col-md-4">
-        <h4>Versão 0.1</h4>
-        <ul>
-            <li>Execution molecular dynamics simulations for a set of molecules.</li>
-            <li>A set of alignment elements.</li>
-            <li>Generation matrices of descriptors.</li>
-            <li>Sending email with the result of the processing.</li>
-        </ul>
-        <p><a href="#">Older versions</a></p>
-    </div>
+</div>
+
+
+
 {% endblock %}
