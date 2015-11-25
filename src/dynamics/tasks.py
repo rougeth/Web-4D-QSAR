@@ -315,8 +315,8 @@ def task_dynamic(molecule, charge):
         logger.error('%s/md50.gro does not exists.' % molecule.process_dir)
         return False
 
-    #ks = [50, 100, 150, 200, 250, 300, 310]
-    ks = [50, 310]
+    ks = [50, 100, 200, 350, 300]
+    #ks = [50, 310]
     for i, k in enumerate(ks):
         subprocess.Popen([
             gromacs_path('grompp'),
