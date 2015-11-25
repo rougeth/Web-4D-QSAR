@@ -2,10 +2,9 @@ from django.test import TestCase
 from django.core.urlresolvers import reverse
 
 
-# Create your tests here.
 class HomeTest(TestCase):
     def setUp(self):
-        self.response = self.client.get(reverse('home'))
+        self.response = self.client.get(reverse('core:home'))
 
     def test_get(self):
         ''' GET / must return status code 200
@@ -17,9 +16,10 @@ class HomeTest(TestCase):
         '''
         self.assertTemplateUsed(self.response, 'core/home.html')
 
+
 class HowItWorksTest(TestCase):
     def setUp(self):
-        self.response = self.client.get('/how-it-works')
+        self.response = self.client.get(reverse('core:how_it_works'))
 
     def test_get(self):
         ''' GET /how-it-works must return status code 200
@@ -31,18 +31,20 @@ class HowItWorksTest(TestCase):
         '''
         self.assertTemplateUsed(self.response, 'core/how_it_works.html')
 
+
 class DocumentationTest(TestCase):
     def setUp(self):
-        self.response = self.client.get('/doc')
+        self.response = self.client.get(reverse('core:docs'))
 
     def test_get(self):
         ''' GET /docs must return status code 302 because it is a redirect view
         '''
         self.assertEqual(302, self.response.status_code)
 
+
 class LicenseTest(TestCase):
     def setUp(self):
-        self.response = self.client.get('/license')
+        self.response = self.client.get(reverse('core:license'))
 
     def test_get(self):
         ''' GET /license must return status code 200

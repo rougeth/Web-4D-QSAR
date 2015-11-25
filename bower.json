@@ -1,0 +1,6 @@
+{
+  "name": "web-4d-qsar",
+  "dependencies": {
+    "bootstrap-sass": "~3.3.4"
+  }
+}

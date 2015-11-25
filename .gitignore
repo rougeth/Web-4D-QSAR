@@ -5,3 +5,5 @@ __pycache__
 *.egg-info
 *.sublime-project
 *.sublime-workspace
+bower_components
+node_modules
