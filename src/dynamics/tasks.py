@@ -384,7 +384,7 @@ def align_not_reference(molecule, ref_dir):
     os.makedirs(pac_dir)
 
     print(molecule.process_dir)
-    os.system('echo "0\n0" | {0} -b 20 -f {1}/md310.trr -s {1}/md310.tpr -fit rot+trans -sep -o {2} -nice 0 -quiet'.format(
+    os.system('echo "0\n0" | {0} -b 20 -f {1}/md300.trr -s {1}/md300.tpr -fit rot+trans -sep -o {2} -nice 0 -quiet'.format(
         gromacs_path('trjconv'),
         molecule.process_dir,
         pac_dir + '/alinha.pdb',
@@ -457,7 +457,7 @@ def align_reference(molecule):
     os.makedirs(pac_dir)
 
 
-    os.system('echo "0\n0" | {0} -b 20 -f {1}/md310.trr -s {1}/md310.tpr -fit rot+trans -sep -o {2} -nice 0 -quiet'.format(
+    os.system('echo "0\n0" | {0} -b 20 -f {1}/md300.trr -s {1}/md300.tpr -fit rot+trans -sep -o {2} -nice 0 -quiet'.format(
         gromacs_path('trjconv'),
         molecule.process_dir,
         pac_dir + '/prot_ref.pdb',
