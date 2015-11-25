@@ -1,4 +1,5 @@
 from django.db import models
+import re
 
 
 def path_builder(instance, filename):

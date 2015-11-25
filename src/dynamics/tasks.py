@@ -7,7 +7,7 @@ from celery import task
 from celery.utils.log import get_task_logger
 
 from dynamics.models import (Dynamic, Molecule)
-from dynamics.utils import MoleculeProcess, remove_line, replace_line
+from dynamics.utils import MoleculeProcess, remove_line, replace_line,replace_numbered_line
 
 
 BASE_DIR = getattr(settings, 'BASE_DIR')
@@ -47,7 +47,9 @@ def task_execute_topolbuild(molecule):
         molecule.filename
     ))
 
-    subprocess.Popen(['/usr/bin/topolbuild',
+    replace_numbered_line(2,molecule.filename_without_extension, molecule.process_dir+"/"+molecule.filename)
+    
+    subprocess.Popen(['/usr/bin/topolbuild1_3',
         '-n', molecule.filename_without_extension,
         '-dir', TOPOLBUILD_DIR,
         '-ff', 'gaff'],
@@ -80,7 +82,7 @@ def task_prepare_files_for_gromacs(molecule):
         molecule.process_dir, molecule.filename_without_extension))
 
     subprocess.Popen([
-        gromacs_path('editconf'),
+        gromacs_path('editconf_mpi'),
         '-bt', 'cubic',
         '-f', 'lig.gro',
         '-o', 'lig_box.gro',
@@ -90,7 +92,7 @@ def task_prepare_files_for_gromacs(molecule):
     ).wait()
 
     subprocess.Popen([
-       gromacs_path('genbox'),
+       gromacs_path('genbox_mpi'),
        '-cp', 'lig_box.gro',
        '-cs', 'tip3p.gro',
        '-o', 'lig_h2o.gro',
@@ -100,7 +102,7 @@ def task_prepare_files_for_gromacs(molecule):
     ).wait()
 
     subprocess.Popen([
-       gromacs_path('grompp'),
+       gromacs_path('grompp_mpi'),
        '-f', 'st.mdp',
        '-c', 'lig_h2o.gro',
        '-p', 'lig.top',
@@ -118,85 +120,85 @@ def task_check_sytem_charge(molecule):
 
     line = line.split(' ')[-1][:-1]
     charge = float(line)
-    if charge != 0:
+    if abs(charge) > 0.1:
         logger.info('System has non-zero total charge: {}'.format(charge))
 
-    if charge > 0:
-        group_option = subprocess.Popen(['echo', '4'],
-            stdout=subprocess.PIPE)
+        if charge > 0:
+            group_option = subprocess.Popen(['echo', '4'],
+                stdout=subprocess.PIPE)
 
-        subprocess.Popen([
-            gromacs_path('genion'),
-            '-s', 'st.tpr',
-            '-nn', str(charge),
-            '-o', 'st.gro',
-            '-quiet'],
-            cwd=molecule.process_dir,
-            stdin=group_option.stdout
-        ).wait()
+            subprocess.Popen([
+                gromacs_path('genion_mpi'),
+                '-s', 'st.tpr',
+                '-nn', str(charge),
+                '-o', 'st.gro',
+                '-quiet'],
+                cwd=molecule.process_dir,
+                stdin=group_option.stdout
+            ).wait()
 
-        with open('%s/lig.top' % molecule.process_dir) as f:
-            new_ligtop = []
-            lines = f.readlines()
-            for line in lines:
-                if line.startswith('SOL'):
-                    line = line.split()
-                    sol = int(line[1]) + 1
-                    line[1] = str(sol)
-                    line = ' '.join(line) + '\n'
+            with open('%s/lig.top' % molecule.process_dir) as f:
+                new_ligtop = []
+                lines = f.readlines()
+                for line in lines:
+                    if line.startswith('SOL'):
+                        line = line.split()
+                        sol = int(line[1]) + 1
+                        line[1] = str(sol)
+                        line = ' '.join(line) + '\n'
 
-                new_ligtop.append(line)
+                    new_ligtop.append(line)
 
-            new_ligtop.append('CL 1\n')
+                new_ligtop.append('CL 1\n')
 
-        with open('%s/lig.top' % molecule.process_dir, 'w') as f:
-            for line in new_ligtop:
-                f.write(line)
+            with open('%s/lig.top' % molecule.process_dir, 'w') as f:
+                for line in new_ligtop:
+                    f.write(line)
 
-    elif charge < 0:
-        group_option = subprocess.Popen(['echo', '4'],
-            stdout=subprocess.PIPE)
+        elif charge < 0:
+            group_option = subprocess.Popen(['echo', '4'],
+                stdout=subprocess.PIPE)
 
-        subprocess.Popen([
-            gromacs_path('genion'),
-            '-s', 'st.tpr',
-            '-np', str(abs(charge)),
-            '-o', 'st.gro',
-            '-quiet'],
-            cwd=molecule.process_dir,
-            stdin=group_option.stdout
-        ).wait()
+            subprocess.Popen([
+                gromacs_path('genion_mpi'),
+                '-s', 'st.tpr',
+                '-np', str(abs(charge)),
+                '-o', 'st.gro',
+                '-quiet'],
+                cwd=molecule.process_dir,
+                stdin=group_option.stdout
+            ).wait()
 
-        with open('%s/lig.top' % molecule.process_dir) as f:
-            new_ligtop = []
-            lines = f.readlines()
-            for line in lines:
-                if line.startswith('SOL'):
-                    line = line.split()
-                    sol = int(line[1]) - 1
-                    line[1] = str(sol)
-                    line = ' '.join(line) + '\n'
+            with open('%s/lig.top' % molecule.process_dir) as f:
+                new_ligtop = []
+                lines = f.readlines()
+                for line in lines:
+                    if line.startswith('SOL'):
+                        line = line.split()
+                        sol = int(line[1]) - 1
+                        line[1] = str(sol)
+                        line = ' '.join(line) + '\n'
 
-                new_ligtop.append(line)
+                    new_ligtop.append(line)
 
-            new_ligtop.append('NA 1\n')
+                new_ligtop.append('NA 1\n')
 
-        with open('%s/lig.top' % molecule.process_dir, 'w') as f:
-            for line in new_ligtop:
-                f.write(line)
+            with open('%s/lig.top' % molecule.process_dir, 'w') as f:
+                for line in new_ligtop:
+                    f.write(line)
 
     return charge
 
 def task_dynamic(molecule, charge):
 
-    if charge == 0:
-        struct_file = 'lig_h2o.gro'
-    else:
+    if abs(charge) > 0.1:
         struct_file = 'st.gro'
+    else:
+        struct_file = 'lig_h2o.gro'
 
     # dinamica.sh
     subprocess.Popen([
-        gromacs_path('grompp'),
+        gromacs_path('grompp_mpi'),
         '-f', 'st.mdp',
         '-c', struct_file,
         '-p', 'lig.top',
@@ -210,7 +212,7 @@ def task_dynamic(molecule, charge):
         return False
 
     subprocess.Popen([
-        gromacs_path('mdrun'),
+        gromacs_path('mdrun_mpi'),
         '-s', 'st.tpr',
         '-o', 'st.trr',
         '-c', 'cg.gro',
@@ -224,7 +226,7 @@ def task_dynamic(molecule, charge):
         return False
 
     subprocess.Popen([
-        gromacs_path('grompp'),
+        gromacs_path('grompp_mpi'),
         '-f', 'cg.mdp',
         '-c', 'cg.gro',
         '-p', 'lig.top',
@@ -237,7 +239,7 @@ def task_dynamic(molecule, charge):
         return False
 
     subprocess.Popen([
-        gromacs_path('mdrun'),
+        gromacs_path('mdrun_mpi'),
         '-s', 'cg.tpr',
         '-o', 'cg.trr',
         '-c', 'gs.gro',
@@ -251,7 +253,7 @@ def task_dynamic(molecule, charge):
         return False
 
     subprocess.Popen([
-        gromacs_path('grompp'),
+        gromacs_path('grompp_mpi'),
         '-f', 'gs.mdp',
         '-c', 'cg.gro',
         '-p', 'lig.top',
@@ -286,7 +288,7 @@ def task_dynamic(molecule, charge):
     # Dinamic
     # PR
     subprocess.Popen([
-        gromacs_path('grompp'),
+        gromacs_path('grompp_mpi'),
         '-f', 'pr.mdp',
         '-c', 'pr.gro',
         '-p', 'lig.top',
@@ -300,7 +302,7 @@ def task_dynamic(molecule, charge):
         return False
 
     subprocess.Popen([
-        gromacs_path('mdrun'),
+        gromacs_path('mdrun_mpi'),
         '-s', 'pr.tpr',
         '-o', 'pr.trr',
         '-c', 'md50.gro',
@@ -313,10 +315,11 @@ def task_dynamic(molecule, charge):
         logger.error('%s/md50.gro does not exists.' % molecule.process_dir)
         return False
 
-    ks = [50, 100, 200, 350, 300]
+    #ks = [50, 100, 150, 200, 250, 300, 310]
+    ks = [50, 310]
     for i, k in enumerate(ks):
         subprocess.Popen([
-            gromacs_path('grompp'),
+            gromacs_path('grompp_mpi'),
             '-f', 'md%s.mdp' % k,
             '-c', 'md%s.gro' % k,
             '-p', 'lig.top',
@@ -336,7 +339,7 @@ def task_dynamic(molecule, charge):
             c_arg = 'pmd.gro'
 
         subprocess.Popen([
-            gromacs_path('mdrun'),
+            gromacs_path('mdrun_mpi'),
             '-s', 'md%s.tpr' % k,
             '-o', 'md%s.trr' % k,
             '-c', c_arg,
@@ -381,8 +384,8 @@ def align_not_reference(molecule, ref_dir):
     os.makedirs(pac_dir)
 
     print(molecule.process_dir)
-    os.system('echo "0\n0" | {0} -b 20 -f {1}/md300.trr -s {1}/md300.tpr -fit rot+trans -sep -o {2} -nice 0 -quiet'.format(
-        gromacs_path('trjconv'),
+    os.system('echo "0\n0" | {0} -b 20 -f {1}/md310.trr -s {1}/md310.tpr -fit rot+trans -sep -o {2} -nice 0 -quiet'.format(
+        gromacs_path('trjconv_mpi'),
         molecule.process_dir,
         pac_dir + '/alinha.pdb',
     ))
@@ -392,7 +395,7 @@ def align_not_reference(molecule, ref_dir):
 
     for f in frames:
         subprocess.Popen([
-            gromacs_path('g_confrms'),
+            gromacs_path('g_confrms_mpi'),
             '-f1', ref_dir + '/pconfs/prot_ref0.pdb',
             '-n1', ref_dir + '/PAC_atoms.ndx',
             '-f2', pac_dir + '/alinha%s.pdb' % f,
@@ -411,23 +414,25 @@ def align_not_reference(molecule, ref_dir):
             pac_dir + '/sem_SOL_%s.pdb' % f
         ))
 
-    os.system('cat {}/sem_SOL_*.pdb > {}/PAC_done.pdb'.format(
+    os.system('cat {}/sem_SOL_*.pdb > {}/{}_PAC.pdb'.format(
         pac_dir,
-        molecule.process_dir
+        molecule.process_dir,
+        molecule.filename_without_extension
     ))
 
     for f in frames:
         subprocess.Popen([
-            gromacs_path('editconf'),
+            gromacs_path('editconf_mpi'),
             '-f', pac_dir + '/sem_SOL_%s.pdb' % f,
             '-o', pac_dir + '/gro_%s.gro' % f,
             '-quiet'],
             cwd=molecule.process_dir,
         ).wait()
 
-    os.system('cat {}/gro_* > {}/PAC_done.gro'.format(
+    os.system('cat {}/gro_* > {}/{}_PAC.gro'.format(
         pac_dir,
-        molecule.process_dir
+        molecule.process_dir,
+        molecule.filename_without_extension
     ))
 
     #os.system('rm -r %s' % pac_dir)
@@ -452,8 +457,8 @@ def align_reference(molecule):
     os.makedirs(pac_dir)
 
 
-    os.system('echo "0\n0" | {0} -b 20 -f {1}/md300.trr -s {1}/md300.tpr -fit rot+trans -sep -o {2} -nice 0 -quiet'.format(
-        gromacs_path('trjconv'),
+    os.system('echo "0\n0" | {0} -b 20 -f {1}/md310.trr -s {1}/md310.tpr -fit rot+trans -sep -o {2} -nice 0 -quiet'.format(
+        gromacs_path('trjconv_mpi'),
         molecule.process_dir,
         pac_dir + '/prot_ref.pdb',
     ))
@@ -463,7 +468,7 @@ def align_reference(molecule):
 
     for f in frames:
         subprocess.Popen([
-            gromacs_path('g_confrms'),
+            gromacs_path('g_confrms_mpi'),
             '-f1', pac_dir + '/prot_ref0.pdb',
             '-n1', molecule.process_dir + '/PAC_atoms.ndx',
             '-f2', pac_dir + '/prot_ref%s.pdb' % f,
@@ -501,21 +506,23 @@ def align_reference(molecule):
 
     for f in frames:
         subprocess.Popen([
-            gromacs_path('editconf'),
+            gromacs_path('editconf_mpi'),
             '-f', pac_dir + '/sem_FAD_%s.pdb' % f,
             '-o', pac_dir + '/gro_%s.gro' % f,
             '-quiet'],
             cwd=molecule.process_dir,
         ).wait()
 
-    os.system('cat {}/sem_FAD_*.pdb > {}/PAC_ref.pdb'.format(
+    os.system('cat {}/sem_FAD_*.pdb > {}/{}_PAC.pdb'.format(
         pac_dir,
-        molecule.process_dir
+        molecule.process_dir,
+        molecule.filename_without_extension
     ))
 
-    os.system('cat {}/gro_* > {}/PAC_ref.gro'.format(
+    os.system('cat {}/gro_* > {}/{}_PAC.gro'.format(
         pac_dir,
-        molecule.process_dir
+        molecule.process_dir,
+        molecule.filename_without_extension
     ))
 
     os.system('rm %s/sem*' % pac_dir)
@@ -523,6 +530,82 @@ def align_reference(molecule):
 
     return True
 
+def task_lqtagrid(molecules):
+    print('Creating lqtagrid file')
+    list_path = molecules[0].molecule.file.path.split('/')[:-1]
+    path = '/'.join(list_path)
+    lqtagrid_file = path+"/lqtagrid_files.txt" 
+    output = ""
+    for m in molecules:
+        output += m.process_dir+"/"+m.filename_without_extension+"_PAC.gro\n"
+        output += m.process_dir+"/"+m.filename_without_extension+".top\n"
+        output += m.process_dir+"/ff"+m.filename_without_extension+"nb.itp\n"
+    arq = open(lqtagrid_file, "w")
+    arq.write(output)
+    arq.close()
+    subprocess.Popen(['python','/home/jpam/LQTAgridPy/src/lqtagrid.py',
+        '--mols', lqtagrid_file,
+        '-a', 'Na+',
+        '-s', '1',
+        '-o', path+'/matrix.txt'],
+        cwd=path
+    ).wait()
+
+def task_rename_lig_files(molecule):
+    list_path = molecule.molecule.file.path.split('/')[:-1]
+    path = '/'.join(list_path)
+    os.system('mv {0}/lig.gro {0}/{1}.gro'.format(
+        molecule.process_dir,
+        molecule.filename_without_extension
+    ))    
+    os.system('mv {0}/lig.top {0}/{1}.top'.format(
+        molecule.process_dir,
+        molecule.filename_without_extension
+    ))    
+
+def task_prepare_output_files(molecules):
+    list_path = molecules[0].molecule.file.path.split('/')[:-1]
+    path = '/'.join(list_path)
+    output_dir = path + '/output'
+    if os.path.exists(output_dir):
+        shutil.rmtree(output_dir)
+    os.makedirs(output_dir)
+    os.system('cp {0}/matrix.txt {1}'.format(
+        path,
+        output_dir
+    ))            
+    os.system('cp {0}/lqtagrid_files.txt {1}'.format(
+        path,
+        output_dir
+    ))      
+    for molecule in molecules:
+        molecule_dir = output_dir+'/'+molecule.filename_without_extension
+        os.system('cp {0}/{1}.gro {2}'.format(
+            molecule.process_dir,
+            molecule.filename_without_extension,
+            molecule_dir
+        ))                    
+        os.system('cp {0}/{1}.top {2}'.format(
+            molecule.process_dir,
+            molecule.filename_without_extension,
+            molecule_dir
+        ))                    
+        os.system('cp {0}/ff{1}nb.itp {2}'.format(
+            molecule.process_dir,
+            molecule.filename_without_extension,
+            molecule_dir
+        ))                    
+        os.system('cp {0}/{1}_PAC.gro {2}'.format(
+            molecule.process_dir,
+            molecule.filename_without_extension,
+            molecule_dir
+        ))                    
+        os.system('cp {0}/{1}_PAC.pdb {2}'.format(
+            molecule.process_dir,
+            molecule.filename_without_extension,
+            molecule_dir
+        ))                    
+    
 
 @task()
 def molecular_dynamics(dynamic):
@@ -558,8 +641,15 @@ def molecular_dynamics(dynamic):
 
     align_reference(ref_molecule)
     ref_dir = ref_molecule.process_dir
-
+    
     for molecule in not_ref_molecules:
         align_not_reference(molecule, ref_dir)
+
+    logger.info('Renaming lig files')
+    for molecule in molecules:
+        task_rename_lig_files(molecule)
+
+    #logger.info('Execute LQTAgrid.')
+    #task_lqtagrid(molecules)
 
     return True
