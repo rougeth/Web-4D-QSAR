@@ -56,3 +56,19 @@ def replace_line(line1, line2, file):
                 f.write(line2)
             else:
                 f.write(line)
+
+def replace_numbered_line(number,l, file):
+    """Replace a numbered line from a file
+
+    :param number: number of the line to be replaced
+    :param l: line to be placed
+    :param file: file to have a line replaced
+    """
+    f = open(file, 'r')
+    lines = f.readlines()
+    f.close()
+
+    lines[number-1] = l+"\n"
+    with open(file, 'w') as f:
+        for line in lines:
+            f.write(line)
