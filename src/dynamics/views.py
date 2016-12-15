@@ -1,10 +1,13 @@
 from django.shortcuts import render
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect#, JsonResponse
 from django.forms.formsets import formset_factory
 
 from dynamics.models import Dynamic, Molecule
 from dynamics.forms import DynamicForm, MoleculeForm
 from dynamics import tasks
+
+#from django.forms.models import model_to_dict
+from django.core import serializers
 
 
 def new_dynamic(request):
@@ -101,7 +104,10 @@ def attach_molecules_post(request, dynamic):
         request.session['dynamic_id'] = None
 
         # Starts the task to process the new dynamic
-        tasks.molecular_dynamics.delay(dynamic)
+        #tasks.molecular_dynamics.delay(dynamic)
+        #tasks.molecular_dynamics.delay(model_to_dict(dynamic) )
+        #serializers.serialize("xml", SomeModel.objects.all())
+        tasks.molecular_dynamics.delay(serializers.serialize("json", [dynamic]))
 
         context = {
             'name': dynamic.name,

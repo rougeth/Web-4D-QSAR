@@ -31,7 +31,7 @@ The **Web 4D-QSAR** was built and tested using Ubuntu 14.04 LTS but it should ru
 * rabbitmq-server
 
 ```
-$ sudo apt-get install build-essential cmake git python python-dev python-pip rabbitmq-server
+$ sudo apt-get install build-essential cmake git python python-dev python-pip rabbitmq-server dos2unix
 ```
 
 * virtualenvwrapper
@@ -100,7 +100,8 @@ For the next steps, you must be at `src/` folder.
 
 ### Preparing the database
 
-`$ python manage.py syncdb`
+`$ python manage.py makemigrations`
+`$ python manage.py migrate`
 
 *No need of creating superuser.*
 

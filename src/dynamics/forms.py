@@ -12,4 +12,4 @@ class DynamicForm(forms.ModelForm):
 
 class MoleculeForm(forms.Form):
     file = forms.FileField(required=True)
-    atoms = forms.CharField(max_length=20)
+    atoms = forms.CharField(max_length=40)

@@ -1,10 +1,11 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
+from dynamics.views import new_dynamic,attach_molecules
 
 
-urlpatterns = patterns(
-    'dynamics.views',
+urlpatterns = [
+    
 
-    url(r'^new/$', 'new_dynamic', name='new_dynamic'),
-    url(r'^attach-molecules/$', 'attach_molecules',
+    url(r'^new/$', new_dynamic, name='new_dynamic'),
+    url(r'^attach-molecules/$', attach_molecules,
         name='attach_molecules'),
-)
+]
