@@ -31,15 +31,6 @@
         }
         this.submit();
     });
-    $('#id_run_lqtagrid').click(function(event) {
-      if ($('#id_run_lqtagrid').prop('checked')) {
-        $('#id_run_alignment').prop( "checked", true );
-        $('#id_run_alignment').prop( "disabled", true );
-      }
-      else {
-        $('#id_run_alignment').prop( "disabled", false );
-      }
-    });
 </script>
 {% endblock %}
 
@@ -47,14 +38,8 @@
 <div class="row">
     <div class="col-md-3"></div>
     <div class="col-md-6">
-        <h1>{% trans "Attach Molecules" %}</h1>
+        <h1>{% trans "Run Alignment" %}</h1>
         <p class="lead">{% trans 'On this page you must insert the reference molecules to the dynamics and alignments.' %}</p>
-        {% if molecules_attached and not run_alignment %}
-          <h2>{% trans "Molecules Already Attached" %}</h2>
-          {% for m in molecules_attached %}
-            <p>Molecule #{{ forloop.counter }}: {{ m.file.path }}</p>
-          {% endfor %}
-        {% endif %}
         <form id="molecules-form" class="form-horizontal" role="form" action="" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             {{ dynamic_form.non_field_errors }}
@@ -71,27 +56,11 @@
                 </div>
             </div>
             {{ molecule_formset.management_form }}
-            {% for f in molecule_formset %}
+            {% for m,f in molecules_attached %}
               <hr>
-
-              {% if f.file.errors %}
-                <div class="form-group file-input has-error">
-              {% else %}
-                <div class="form-group file-input">
-              {% endif %}
-                  {% if molecules_attached and not run_alignment %}
-                    {% with molecules_attached|length as num %}
-                      <label for="{{ f.file.id_for_label }}" class="col-sm-3 control-label">Molecule #{{ forloop.counter|add:num }}</label>
-                    {% endwith %}
-                  {% else %}
-                    <label for="{{ f.file.id_for_label }}" class="col-sm-3 control-label">Molecule #{{ forloop.counter }}</label>
-                  {% endif %}
-                  <div class="col-sm-9">
-                      {{ f.file.errors }}
-                      {{ f.file }}
-                      <p class="help-block">{% trans 'The format of the file must be \'.mol2\'.' %}</p>
-                  </div>
-                </div>
+              <div class="form-group">
+                <p>Molecule #{{ forloop.counter }}: {{ m.file.path }}</p>
+              </div>
               <div class="form-group atoms-input">
                   <label for="{{ f.atoms.id_for_label }}" class="col-sm-3 control-label">Atoms</label>
                   <div class="col-sm-9">
@@ -101,21 +70,18 @@
               </div>
             {% endfor %}
             <div class="form-group">
-                <label for="id_run_alignment" class="col-sm-3 control-label">Run alignment</label>
-                <div class="col-sm-3">
-                  <input class="form-control" id="id_run_alignment" name="run_alignment" type="checkbox">
-                </div>
-            </div>
-            <div class="form-group">
+              <!--<label for="{{ dynamic_form.run_lqtagrid.id_for_label }}" class="col-sm-3 control-label">{{ dynamic_form.run_lqtagrid.label }}</label> -->
               <label for="id_run_lqtagrid" class="col-sm-3 control-label">Run lqtagrid</label>
               <div class="col-sm-3">
+                <!--{{ dynamic_form.run_lqtagrid.errors }}
+                {{ dynamic_form.run_lqtagrid|add_class:"form-control" }} <-->
                 <input class="form-control" id="id_run_lqtagrid" name="run_lqtagrid" type="checkbox">
               </div>
             </div>
             <div class="form-group">
                 <label for="" class="col-sm-3 control-label"></label>
                 <div class="col-sm-offset-3 col-sm-9">
-                  <button type="submit" class="btn btn-default">{% trans 'Start Dynamic' %}</button>
+                      <button type="submit" class="btn btn-default">{% trans 'Start Alignment' %}</button>
                 </div>
             </div>
         </form>

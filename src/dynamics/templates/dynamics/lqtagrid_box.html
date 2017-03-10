@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
+        <h1>{% trans "Generate Matrix Descriptors" %}</h1>
+        <form class="form" role="form" action="" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ box_form.non_field_errors }}
+            <div class="alert alert-info">
+            <p class="lead">Box data (leave dimensions and coordinates with zeros if you want they are automatically generated)</p>
+            </div>
+            <div class="form-group">
+                <label for="{{ box_form.box_dimension_x.id_for_label }}">{{ box_form.box_dimension_x.label }}</label>
+                {{ box_form.box_dimension_x.errors }}
+                {{ box_form.box_dimension_x|add_class:"form-control" }}
+                <span class="help-block">Inform the dimension box.</span>
+            </div>
+            <div class="form-group">
+                <label for="{{ box_form.box_dimension_y.id_for_label }}">{{ box_form.box_dimension_y.label }}</label>
+                {{ box_form.box_dimension_y.errors }}
+                {{ box_form.box_dimension_y|add_class:"form-control" }}
+                <span class="help-block">Inform the dimension box.</span>
+            </div>
+            <div class="form-group">
+                <label for="{{ box_form.box_dimension_z.id_for_label }}">{{ box_form.box_dimension_z.label }}</label>
+                {{ box_form.box_dimension_z.errors }}
+                {{ box_form.box_dimension_z|add_class:"form-control" }}
+                <span class="help-block">Inform the dimension box.</span>
+            </div>
+            <div class="form-group">
+                <label for="{{ box_form.box_coordinate_x.id_for_label }}">{{ box_form.box_coordinate_x.label }}</label>
+                {{ box_form.box_coordinate_x.errors }}
+                {{ box_form.box_coordinate_x|add_class:"form-control" }}
+                <span class="help-block">Enter the total molecules.</span>
+            </div>
+            <div class="form-group">
+                <label for="{{ box_form.box_coordinate_y.id_for_label }}">{{ box_form.box_coordinate_y.label }}</label>
+                {{ box_form.box_coordinate_y.errors }}
+                {{ box_form.box_coordinate_y|add_class:"form-control" }}
+                <span class="help-block">Enter the number of atoms for alignment.</span>
+            </div>
+            <div class="form-group">
+                <label for="{{ box_form.box_coordinate_z.id_for_label }}">{{ box_form.box_coordinate_z.label }}</label>
+                {{ box_form.box_coordinate_z.errors }}
+                {{ box_form.box_coordinate_z|add_class:"form-control" }}
+            </div>
+            <div class="form-group">
+                <label for="{{ box_form.step.id_for_label }}">{{ box_form.step.label }}</label>
+                {{ box_form.step.errors }}
+                {{ box_form.step|add_class:"form-control" }}
+            </div>
+            <div class="alert alert-info">
+                <p class="lead">Probes</p>
+            </div>
+            <div class="form-group">
+                <label for="{{ box_form.probe.id_for_label }}">{{ box_form.probe.label }}</label>
+                {{ box_form.probe.errors }}
+                {{ box_form.probe|add_class:"form-control" }}
+            </div>
+            <div class="form-group">
+                <div class="btn-group">
+                    <button type="reset" class="btn btn-default">{% trans 'Reset' %}</button>
+                    <button type="submit" class="btn btn-primary">{% trans 'Next step' %}</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-3"></div>
+</div>
+{% endblock %}

@@ -50,6 +50,7 @@ INSTALLED_APPS = (
     'core',
     'dynamics',
     'matrix_generate',
+    'users',
 )
 
 if DEBUG:
@@ -82,6 +83,8 @@ DATABASES = {
         cast=parse
     )
 }
+
+AUTH_USER_MODEL = 'users.MyUser'
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
@@ -129,7 +132,7 @@ TEMPLATES = [
 
 # Tasks settings
 WEB_4D_QSAR_STATIC_DIR  = os.path.join(BASE_DIR, 'files/static')
-TOPOLBUILD_DIR = '/opt/topolbuild1_2_1'
+TOPOLBUILD_DIR = '/opt/topolbuild1_3'
 GROMACS_DIR = '/usr/local/gromacs/bin'
 GROMACS_MPI = False
 
@@ -137,3 +140,10 @@ GROMACS_MPI = False
 CELERY_OFF = False
 BROKER_URL = 'amqp://guest:guest@localhost:5672//'
 # CELERYD_CONCURRENCY = 4
+
+# E-mail settings
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'web4dqsar@gmail.com'
+EMAIL_HOST_PASSWORD = '4DLQTAQSAR'
+EMAIL_PORT = 587

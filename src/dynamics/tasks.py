@@ -1,10 +1,15 @@
 import os
 import subprocess
-import time
+import shutil
+import sys
+import traceback
 
 from django.conf import settings
+from django.core.mail import send_mail
 from celery import task
 from celery.utils.log import get_task_logger
+from LQTAgridPy.src.grid_generate import GridGenerate
+
 
 from dynamics.models import (Dynamic, Molecule)
 from dynamics.utils import MoleculeProcess, remove_line, replace_line,replace_numbered_line
@@ -57,7 +62,7 @@ def task_execute_topolbuild(molecule):
 
     replace_numbered_line(2,molecule.filename_without_extension, molecule.process_dir+"/"+molecule.filename)
 
-    subprocess.Popen(['/usr/bin/topolbuild',
+    subprocess.Popen(['/usr/bin/topolbuild1_3',
         '-n', molecule.filename_without_extension,
         '-dir', TOPOLBUILD_DIR,
         '-ff', 'gaff'],
@@ -340,8 +345,8 @@ def task_dynamic(molecule, charge):
         logger.error('%s/md50.gro does not exists.' % molecule.process_dir)
         return False
 
-    #ks = [50, 100, 200, 350, 300]
-    ks = [50, 300]
+    ks = [50, 100, 200, 350, 300]
+    #ks = [50, 300]
     #ks = [50, 310]
     for i, k in enumerate(ks):
         subprocess.Popen([
@@ -486,7 +491,6 @@ def align_reference(molecule):
         shutil.rmtree(pac_dir)
     os.makedirs(pac_dir)
 
-
     os.system('echo "0\n0" | {0} -b 20 -f {1}/md300.trr -s {1}/md300.tpr -fit rot+trans -sep -o {2} -nice 0 -quiet'.format(
         gromacs_path(gromacs_command('gmx trjconv')),
         molecule.process_dir,
@@ -562,26 +566,64 @@ def align_reference(molecule):
 
     return True
 
-def task_lqtagrid(molecules):
+# def task_lqtagrid(molecules):
+#     print('Creating lqtagrid file')
+#     list_path = molecules[0].molecule.file.path.split('/')[:-1]
+#     path = '/'.join(list_path)
+#     lqtagrid_file = path+"/lqtagrid_files.txt"
+#     output = ""
+#     for m in molecules:
+#         output += m.process_dir+"/"+m.filename_without_extension+"_PAC.gro\n"
+#         output += m.process_dir+"/"+m.filename_without_extension+".top\n"
+#         output += m.process_dir+"/ff"+m.filename_without_extension+"nb.itp\n"
+#     arq = open(lqtagrid_file, "w")
+#     arq.write(output)
+#     arq.close()
+#     subprocess.Popen(['python', '/home/jpam/LQTAgridPy/src/lqtagrid.py',
+#         '--mols', lqtagrid_file,
+#         '-a', 'Na+',
+#         '-s', '1',
+#         '-o', path+'/matrix.txt'],
+#         cwd=path
+#     ).wait()
+
+
+def task_lqtagrid(molecules, dynamic):
     print('Creating lqtagrid file')
     list_path = molecules[0].molecule.file.path.split('/')[:-1]
     path = '/'.join(list_path)
-    lqtagrid_file = path+"/lqtagrid_files.txt"
-    output = ""
+    lqta_grid_dir = path+'/'+'LQTAGridFiles'
+    if os.path.exists(lqta_grid_dir):
+        shutil.rmtree(lqta_grid_dir)
+    os.mkdir(lqta_grid_dir)
     for m in molecules:
-        output += m.process_dir+"/"+m.filename_without_extension+"_PAC.gro\n"
-        output += m.process_dir+"/"+m.filename_without_extension+".top\n"
-        output += m.process_dir+"/ff"+m.filename_without_extension+"nb.itp\n"
-    arq = open(lqtagrid_file, "w")
-    arq.write(output)
-    arq.close()
-    subprocess.Popen(['python','/home/jpam/LQTAgridPy/src/lqtagrid.py',
-        '--mols', lqtagrid_file,
-        '-a', 'Na+',
-        '-s', '1',
-        '-o', path+'/matrix.txt'],
-        cwd=path
-    ).wait()
+        shutil.copy(m.process_dir+"/"+m.filename_without_extension+"_PAC.gro", lqta_grid_dir+"/"+m.filename_without_extension+"_PAC.gro")
+        shutil.copy(m.process_dir+"/"+m.filename_without_extension+".top", lqta_grid_dir+"/"+m.filename_without_extension+".top")
+        shutil.copy(m.process_dir+"/"+"/ff"+m.filename_without_extension+"nb.itp", lqta_grid_dir+"/ff"+m.filename_without_extension+"nb.itp")
+    sys.path.append('/home/jpam/LQTAgridPy')
+    dimensions = (dynamic.lqtagrid_box.box_dimension_x,
+                  dynamic.lqtagrid_box.box_dimension_y,
+                  dynamic.lqtagrid_box.box_dimension_z)
+    coordinates = (dynamic.lqtagrid_box.box_coordinate_x,
+                   dynamic.lqtagrid_box.box_coordinate_y,
+                   dynamic.lqtagrid_box.box_coordinate_z)
+    if (dimensions == (0, 0, 0) and coordinates == (0, 0, 0)):
+        dimensions = ()
+        coordinates = ()
+    #probes = dynamic.lqtagrid_box.probe.split(',')
+    #logger.info(dynamic.lqtagrid_box.probe)
+    probes = dynamic.lqtagrid_box.probe
+    step = dynamic.lqtagrid_box.step
+    logger.info(probes)
+    grid = GridGenerate(
+        coordinates,
+        dimensions,
+        probes,
+        lqta_grid_dir,
+        step
+    )
+    grid.saveGrid(lqta_grid_dir+'/grid')
+
 
 def task_rename_lig_files(molecule):
     list_path = molecule.molecule.file.path.split('/')[:-1]
@@ -594,6 +636,7 @@ def task_rename_lig_files(molecule):
         molecule.process_dir,
         molecule.filename_without_extension
     ))
+
 
 def task_prepare_output_files(molecules):
     list_path = molecules[0].molecule.file.path.split('/')[:-1]
@@ -646,53 +689,76 @@ def molecular_dynamics(obj):
         logger.info('Celery off. Nothing will be executed here.')
         return True
 
-    for desObj in serializers.deserialize("json", obj):
-        dynamic = desObj.object
-    #desObj = serializers.deserialize("json", obj)
-    #dynamic = Dynamic(obj)
-    logger.info('objeto dynamic')
-    logger.info(dynamic)
-    logger.info('tipo objeto dynamic')
-    logger.info(type(dynamic))
-    logger.info(dynamic.__dict__)
+    try:
 
+        for desObj in serializers.deserialize("json", obj):
+            dynamic = desObj.object
 
-    logger.info('Create a MoleculePrcess for each molecule in the dynamic.')
-    molecules = task_create_molecule_process(dynamic)
+        logger.info('Create a MoleculeProcess for each molecule in the dynamic.')
+        molecules = task_create_molecule_process(dynamic)
 
-    for n, molecule in enumerate(molecules):
+        if dynamic.run_dynamics:
+            for n, molecule in enumerate(molecules):
 
-        logger.info('Prepare for {} molecule dynamic.'.format(n))
-        task_create_molecule_dir(molecule)
-        task_copy_static_files(molecule)
+                if not molecule.molecule.dynamic_executed:
+                    logger.info('Prepare for {} molecule dynamic.'.format(n))
+                    task_create_molecule_dir(molecule)
+                    task_copy_static_files(molecule)
 
-        logger.info('Execute topolbuild.')
-        task_execute_topolbuild(molecule)
+                    logger.info('Execute topolbuild.')
+                    task_execute_topolbuild(molecule)
 
-        logger.info('Prepare files for gromacs.')
-        task_prepare_files_for_gromacs(molecule)
+                    logger.info('Prepare files for gromacs.')
+                    task_prepare_files_for_gromacs(molecule)
 
-        logger.info('Check system charge.')
-        charge = task_check_sytem_charge(molecule)
+                    logger.info('Check system charge.')
+                    charge = task_check_sytem_charge(molecule)
 
-        logger.info('Start molecular dynamic.')
-        task_dynamic(molecule, charge)
+                    logger.info('Start molecular dynamic.')
+                    task_dynamic(molecule, charge)
+                    molecule.molecule.dynamic_executed = True
+                    molecule.molecule.save()
 
-    logger.info('Start alignment.')
-    ref_molecule = [m for m in  molecules if m.molecule.reference][0]
-    not_ref_molecules = [m for m in molecules if not m.molecule.reference]
+        if dynamic.run_alignment:
+            logger.info('Start alignment.')
+            ref_molecule = [m for m in molecules if m.molecule.reference][0]
+            not_ref_molecules = [m for m in molecules if not m.molecule.reference]
+            for m in molecules:
+                logger.info(m.filename+str(m.molecule.reference))
 
-    align_reference(ref_molecule)
-    ref_dir = ref_molecule.process_dir
+            align_reference(ref_molecule)
+            ref_dir = ref_molecule.process_dir
 
-    for molecule in not_ref_molecules:
-        align_not_reference(molecule, ref_dir)
+            for molecule in not_ref_molecules:
+                align_not_reference(molecule, ref_dir)
 
-    logger.info('Renaming lig files')
-    for molecule in molecules:
-        task_rename_lig_files(molecule)
+            logger.info('Renaming lig files')
+            for molecule in molecules:
+                task_rename_lig_files(molecule)
 
-    #logger.info('Execute LQTAgrid.')
-    #task_lqtagrid(molecules)
+        if dynamic.run_lqtagrid:
+            logger.info('Execute LQTAgrid.')
+            task_lqtagrid(molecules, dynamic)
+
+    except Exception as e:
+        error_msg = 'The following error has ocurred.\n'
+        error_msg += traceback.format_exc()
+        error_msg += 'Developers of web-4D-QSAR have received the same e-mail and will analyze it.'
+        send_mail(
+            'Error in your task',
+            error_msg,
+            'web4dqsar@gmail.com',
+            [dynamic.user.email, 'joaopauloam@gmail.com'],
+            fail_silently=False,
+        )
+        return False
+
+    send_mail(
+        'Task finished',
+        'Your task submitted to web-4D-QSAR has been finished.',
+        'web4dqsar@gmail.com',
+        [dynamic.user.email],
+        fail_silently=False,
+    )
 
     return True

@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load widget_tweaks %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col-md-3"></div>
+  <div class="col-md-6">
+    <h1>{% trans 'List of dynamics for' %}</h1>
+    {% if user.is_authenticated %}
+      <p class="lead"> {{ user.first_name }} </p>
+      <p class="lead"> {{ user.email }} </p>
+    {% else %}
+      <p class="lead"> Usuário anônimo </p>
+    {% endif %}
+      {% for dynamic in dynamics %}
+          <div class="form-group">
+              <div class="col-sm-9">
+                <h1><a href="">Dynamic id: {{ dynamic.id }}</a></h1>
+                <p>Number of molecules: {{ dynamic.number_of_molecules}}</p>
+                <p>Started: {{ dynamic.started|linebreaksbr }}</p>
+                <div class="form-group">
+                    <div class="btn-group">
+                        <a class="btn btn-default" href="{% url 'dynamics:include_molecules' dynamic.id %}" role="button">{% trans "Attach more molecules" %}</a>
+                        <!-- <a class="btn btn-default" href="" role="button">{% trans "Attach more molecules" %}</a> <-->
+                        <a class="btn btn-default" href="{% url 'dynamics:run_alignment' dynamic.id %}" role="button">{% trans "Run alignment" %}</a>
+                        <a class="btn btn-default" href="{% url 'dynamics:lqtagrid_box' dynamic.id 0 0%}" role="button">{% trans "Run LQTAGrid" %}</a>
+                    </div>
+                </div>
+              </div>
+          </div>
+      {% endfor %}
+  </div>
+</div>
+
+{% endblock %}

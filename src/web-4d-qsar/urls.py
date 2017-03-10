@@ -11,4 +11,5 @@ urlpatterns = [
     url(r'^matrix/', include('matrix_generate.urls',
                              namespace='matrix_generate')),
     url(r'', include('core.urls', namespace='core')),
+    url(r'^users/', include('users.urls', namespace='users')),
 ]

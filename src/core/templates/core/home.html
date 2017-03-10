@@ -23,9 +23,16 @@
       <ul class="nav navbar-nav">
         <li><a href="#">Wiki</a></li>
         <li><a href="#">Documentation</a></li>
-        <li><a href="#">Licence</a></li>
+        <li><a href="#">License</a></li>
         <li><a href="#">Contact</a></li>
         <li><a href="#">Help</a></li>
+        <li><a href="{% url 'users:register' %}">Register</a></li>
+        {% if not user.is_authenticated %}
+          <li><a href="{% url 'users:login' %}">Login</a></li>
+        {% endif %}
+        {% if user.is_authenticated %}
+          <li><a href="{% url 'users:logout' %}">Logout</a></li>
+        {% endif %}
       </ul>
     </div>
   </div>
@@ -34,11 +41,12 @@
 <div class="jumbotron w-jumbotron">
     <div class="container w-jumbotron-container">
         <h1>Web 4D-QSAR</h1>
-        <p>{% trans "An open source project that generates and validates QSAR modules" %}</p>
+        <p>{% trans "An open source project that generates 4D QSAR descriptors" %}</p>
     </div>
 </div>
 <div class="container w-main-links">
     <a class="btn btn-success btn-lg" href="{% url 'dynamics:new_dynamic' %}" role="button">{% trans "New Dynamic" %}</a>
+    <a class="btn btn-success btn-lg" href="{% url 'dynamics:load_dynamics' %}" role="button">{% trans "Load Dynamic" %}</a>
     <a class="btn btn-default btn-lg" href="https://github.com/rougeth/web-4d-qsar" role="button">{% trans "View on GitHub" %}</a>
 </div>
 <hr>
