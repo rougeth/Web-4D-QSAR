@@ -37,7 +37,7 @@ $ sudo apt-get install build-essential cmake git python python-dev python-pip ra
 * virtualenvwrapper
 
 ```
-$ pip install virtualenvwrapper
+$ sudo pip install virtualenvwrapper
 
 $ echo "export WORKON_HOME=$HOME/.virtualenvs" >> ~/.bashrc
 $ echo "source /usr/local/bin/virtualenvwrapper.sh" >> ~/.bashrc
