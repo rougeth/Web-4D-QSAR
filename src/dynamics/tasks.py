@@ -62,7 +62,7 @@ def task_execute_topolbuild(molecule):
 
     replace_numbered_line(2,molecule.filename_without_extension, molecule.process_dir+"/"+molecule.filename)
 
-    subprocess.Popen(['/usr/bin/topolbuild1_3',
+    subprocess.Popen(['/usr/bin/topolbuild',
         '-n', molecule.filename_without_extension,
         '-dir', TOPOLBUILD_DIR,
         '-ff', 'gaff'],
