@@ -90,7 +90,7 @@ Clone the **Web 4D-QSAR** git repository and enter the project folder:
 - To access the virtualenv you just created: `$ workon qsar`
 	Note that you will see the name of the environment in the PS1 variable: `(env_name) $`
 
-- Install the required Python packages (you need to have the env activated):
+- Install the required Python packages (you need to have the env activated and be at requirements folder):
 
 	`$ pip install -r requirements.txt`
 
