@@ -5,7 +5,7 @@ Open source web system to generate and validate QSAR modules.
 
 ## Requirements
 
-The **Web 4D-QSAR** was built and tested using Ubuntu 14.04 LTS but it should run without problems in any Linux distribution that supports the following softwares:
+The **Web 4D-QSAR** was built and tested using Ubuntu 16.04 LTS but it should run without problems in any Linux distribution that supports the following softwares:
 
 * [Git](http://git-scm.com/) >= ?
 * [Python](https://www.python.org/) >= 3
@@ -18,7 +18,7 @@ The **Web 4D-QSAR** was built and tested using Ubuntu 14.04 LTS but it should ru
 * [dos2unix](http://dos2unix.sourceforge.net)
 
 
-## Preparing the machine (Ubuntu 14.04 LTS)
+## Preparing the machine (Ubuntu 16.04 LTS)
 
 > **\* It should be automated using Puppet**
 
@@ -37,7 +37,7 @@ $ sudo apt-get install build-essential cmake git python python-dev python-pip ra
 * virtualenvwrapper
 
 ```
-$ sudo pip install virtualenvwrapper
+$ pip install virtualenvwrapper
 
 $ echo "export WORKON_HOME=$HOME/.virtualenvs" >> ~/.bashrc
 $ echo "source /usr/local/bin/virtualenvwrapper.sh" >> ~/.bashrc
@@ -85,7 +85,7 @@ Clone the **Web 4D-QSAR** git repository and enter the project folder:
 
 	`$ mkvirtualenv web-4d-qsar -p path_to_python3`
 
-	In Ubuntu 14.04, the path to python 3 is */usr/bin/python3*
+	In Ubuntu 16.04, the path to python 3 is */usr/bin/python3*
 
 - To access the virtualenv you just created: `$ workon qsar`
 	Note that you will see the name of the environment in the PS1 variable: `(env_name) $`
@@ -101,7 +101,6 @@ For the next steps, you must be at `src/` folder.
 ### Preparing the database
 
 `$ python manage.py makemigrations`
-`$ python manage.py migrate`
 
 *No need of creating superuser.*
 

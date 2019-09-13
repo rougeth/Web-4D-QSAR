@@ -58,7 +58,7 @@ if DEBUG:
         'debug_toolbar',
     )
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -133,7 +133,7 @@ TEMPLATES = [
 # Tasks settings
 WEB_4D_QSAR_STATIC_DIR  = os.path.join(BASE_DIR, 'files/static')
 TOPOLBUILD_DIR = '/opt/topolbuild1_3'
-GROMACS_DIR = '/usr/local/gromacs/bin'
+GROMACS_DIR = '/usr/bin'
 GROMACS_MPI = False
 
 # Celery settings

@@ -1,0 +1,43 @@
+#!/bin/bash
+# coord = lig.gro
+# topol = lig.top
+#
+# Caixa
+#
+# /usr/local/gromacs_4.0.5/bin/editconf -bt cubic -f lig.gro -o lig_box.gro -d 1.0
+# /usr/local/gromacs_4.0.5/bin/genbox -cp lig_box.gro -cs tip3p.gro -o lig_h2o.gro -p lig.top
+# /usr/local/gromacs_4.0.5/bin/grompp -f st.mdp -c lig_h2o.gro -p lig.top -o st.tpr < se não tiver carga nula o sistema 
+# /usr/local/gromacs_4.0.5/bin/genion -s st.tpr -np 1 -o st.gro <-- " usar np para adiconar Na e nn para adicionar Cl seguido do número de íons" 
+# OTM
+#
+/usr/local/gromacs_4.0.5/bin/grompp -f st.mdp -c lig_h2o.gro -p lig.top -o st.tpr
+/usr/local/gromacs_4.0.5/bin/mdrun -s st.tpr -o st.trr -c cg.gro -g st.log -e st.edr
+/usr/local/gromacs_4.0.5/bin/grompp -f cg.mdp -c cg.gro -p lig.top -o cg.tpr
+/usr/local/gromacs_4.0.5/bin/mdrun -s cg.tpr -o cg.trr -c gs.gro -g cg.log -e cg.edr
+/usr/local/gromacs_4.0.5/bin/grompp -f gs.mdp -c gs.gro -p lig.top -o gs.tpr -maxwarn 2
+/usr/local/gromacs_4.0.5/bin/mdrun -s gs.tpr -o gs.trr -c pr.gro -g gs.log -e gs.edr
+#
+# Dinamica
+#
+# PR
+/usr/local/gromacs_4.0.5/bin/grompp -f pr.mdp -c pr.gro -p lig.top -o pr.tpr
+/usr/local/gromacs_4.0.5/bin/mdrun -s pr.tpr -o pr.trr -c md50.gro -g pr.log -e pr.edr
+# 50 K
+/usr/local/gromacs_4.0.5/bin/grompp -f md50.mdp -c md50.gro -p lig.top -o md50.tpr
+/usr/local/gromacs_4.0.5/bin/mdrun -s md50.tpr -o md50.trr -c md100.gro -g md50.log -e md50.edr
+# 100 K
+/usr/local/gromacs_4.0.5/bin/grompp -f md100.mdp -c md100.gro -p lig.top -o md100.tpr
+/usr/local/gromacs_4.0.5/bin/mdrun -s md100.tpr -o md100.trr -c md200.gro -g md100.log -e md100.edr
+# 200 K
+/usr/local/gromacs_4.0.5/bin/grompp -f md200.mdp -c md200.gro -p lig.top -o md200.tpr
+/usr/local/gromacs_4.0.5/bin/mdrun -s md200.tpr -o md200.trr -c md350.gro -g md200.log -e md200.edr
+# 350 K
+/usr/local/gromacs_4.0.5/bin/grompp -f md350.mdp -c md350.gro -p lig.top -o md350.tpr
+/usr/local/gromacs_4.0.5/bin/mdrun -s md350.tpr -o md350.trr -c md300.gro -g md350.log -e md350.edr
+# 300 K
+/usr/local/gromacs_4.0.5/bin/grompp -f md300.mdp -c md300.gro -p lig.top -o md300.tpr
+/usr/local/gromacs_4.0.5/bin/mdrun -s md300.tpr -o md300.trr -c pmd.gro -g md300.log -e md300.edr
+#
+# Remove
+#
+rm \#*
